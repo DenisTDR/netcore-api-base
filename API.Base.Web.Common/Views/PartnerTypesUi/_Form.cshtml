@@ -1,0 +1,17 @@
+
+@model API.Base.Web.Common.Partners.Models.Entities.PartnerTypeEntity
+
+<div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name)
+
+@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" }})
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.LogoSize)
+
+@Html.EditorFor(model => model.LogoSize, new { htmlAttributes = new { @class = "form-control" }})
+            @Html.ValidationMessageFor(model => model.LogoSize, "", new { @class = "text-danger" })
+        </div>
+</div>

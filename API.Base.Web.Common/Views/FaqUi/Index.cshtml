@@ -1,0 +1,71 @@
+@using API.Base.Web.Base.Extensions.HtmlHelpers
+@using API.Base.Web.Common.Helpers
+@model IEnumerable<API.Base.Web.Common.FAQ.FaqEntity>
+
+@{
+    ViewData["Title"] = "Faq";
+}
+
+<h2>@ViewData["Title"]</h2>
+@Html.RenderBlindPartialAsync("_ShowHideColumns", new ShowHideColumnsModel()
+{
+    Columns = new List<string>()
+    {
+        "Question",
+        "Answer",
+        "Category",
+        "Published"
+    }
+})
+<div class="row">
+    <div class="col-12 col-md-6">
+    </div>
+    <div class="col-12 col-md-6 d-flex justify-content-end pb-2">
+        <a class="btn btn-outline-primary mr-2" asp-action="ReOrder">ReOrder</a>
+        <a class="btn btn-outline-primary" asp-action="Create">Create new Faq</a>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Question)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Answer)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Category)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Published)
+        </th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <span>@Html.DisplayFor(modelItem => item.Question)</span>
+            </td>
+            <td>
+                <span>@Html.DisplayFor(modelItem => item.Answer)</span>
+            </td>
+            <td>
+                <span>@Html.DisplayFor(modelItem => item.Category)</span>
+            </td>
+            <td>
+                <span>@Html.DisplayFor(modelItem => item.Published)</span>
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> <span></span>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> <span></span>
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> <span></span>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

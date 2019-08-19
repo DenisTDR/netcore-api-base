@@ -1,0 +1,23 @@
+
+@model API.Base.Web.Common.Consumables.Models.ConsumableEntity
+
+<div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name)
+
+@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" }})
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Count)
+
+@Html.EditorFor(model => model.Count, new { htmlAttributes = new { @class = "form-control" }})
+            @Html.ValidationMessageFor(model => model.Count, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.ConsumedRecords)
+
+@Html.EditorFor(model => model.ConsumedRecords, new { htmlAttributes = new { @class = "form-control" }})
+            @Html.ValidationMessageFor(model => model.ConsumedRecords, "", new { @class = "text-danger" })
+        </div>
+</div>

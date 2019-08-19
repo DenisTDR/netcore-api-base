@@ -1,0 +1,20 @@
+@using API.Base.Files.Models.ViewModels
+@using AutoMapper
+@model API.Base.Files.Models.Entities.FileEntity
+
+@if (Model == null)
+{
+    <span>null</span>
+    return;
+}
+@{
+    var path = Mapper.Map<FileViewModel>(Model).Link;
+    if (string.IsNullOrEmpty(path))
+    {
+        <span>none</span>
+        return;
+    }
+    var index = path.Length - 15;
+    index = index < 0 ? 0 : index;
+}
+<a href="@path" target="_blank"> ...@path.Substring(index)</a>

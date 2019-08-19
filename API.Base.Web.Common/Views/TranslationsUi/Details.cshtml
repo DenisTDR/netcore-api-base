@@ -1,0 +1,17 @@
+@model API.Base.Web.Common.Models.Entities.TranslationEntity
+@{
+ViewData["Title"] = "Translation";
+}
+
+<h2>Translation: @Model.ToString()</h2>
+<hr/>
+<partial name="_Display"></partial>
+
+<div>
+<a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>        <span>|</span>
+<a asp-action="Details" asp-route-id="@Model.Id">Details</a>        <span>|</span>
+<a asp-action="Delete" asp-route-id="@Model.Id">Delete</a>        <span></span>
+</div>
+<div>
+    <a href='@Url.Action("Index")'>Back to list</a>
+</div>

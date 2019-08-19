@@ -1,0 +1,60 @@
+
+@using API.Base.Web.Base.Extensions.HtmlHelpers
+@using API.Base.Web.Common.Partners.Models.Entities
+@inject API.Base.Web.Base.Database.DataLayer.IDataLayer DataLayer
+@model API.Base.Web.Common.Partners.Models.Entities.PartnerEntity
+
+<div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name)
+
+@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" }})
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Logo)
+
+@{
+var fieldGuidLogo = Html.RandomId();
+}
+<input asp-for="Logo.Id" class="form-control setting_value_input" id="file-field-@(fieldGuidLogo)" readonly/>
+@{
+await Html.RenderBlindPartialAsync("~/Views/FileUi/_FileField.cshtml", Model?.Logo, 
+ new ViewDataDictionary(ViewData) {{"input", "#file-field-" + fieldGuidLogo}});
+}
+
+            @Html.ValidationMessageFor(model => model.Logo, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Type)
+
+<select asp-for="Type.Id" 
+asp-items="(await DataLayer.Repo<PartnerTypeEntity>().GetAll()).Select(p => new SelectListItem(p.ToString(), p.Id))" 
+class="form-control">
+                <option selected="selected" value="">Please select</option>
+ </select>
+            @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Tier)
+
+<select asp-for="Tier.Id" 
+asp-items="(await DataLayer.Repo<PartnerTierEntity>().GetAll()).Select(p => new SelectListItem(p.ToString(), p.Id))" 
+class="form-control">
+                <option selected="selected" value="">Please select</option>
+ </select>
+            @Html.ValidationMessageFor(model => model.Tier, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Url)
+
+@Html.EditorFor(model => model.Url, new { htmlAttributes = new { @class = "form-control" }})
+            @Html.ValidationMessageFor(model => model.Url, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Published)
+
+@Html.EditorFor(model => model.Published, new { htmlAttributes = new { @class = "form-control" }})
+            @Html.ValidationMessageFor(model => model.Published, "", new { @class = "text-danger" })
+        </div>
+</div>

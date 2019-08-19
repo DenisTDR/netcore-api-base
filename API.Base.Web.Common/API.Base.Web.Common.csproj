@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <OutputType>Library</OutputType>
+        <RazorCompileOnBuild>false</RazorCompileOnBuild>
+        <RazorCompileOnPublish>false</RazorCompileOnPublish>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\API.Base.Files\API.Base.Files.csproj" />
+        <ProjectReference Include="..\API.Base.Web.Base\API.Base.Web.Base.csproj" />
+        <ProjectReference Include="..\API.Base.Web.RazorGenerator\API.Base.Web.RazorGenerator.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\AdminDashboard\Index.cshtml" />
+    </ItemGroup>
+</Project>

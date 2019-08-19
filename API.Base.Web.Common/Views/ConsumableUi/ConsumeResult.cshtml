@@ -1,0 +1,31 @@
+@model dynamic
+
+<div id="scan-message">
+@if (ViewBag.User != null)
+{
+if (ViewBag.Ok)
+ {
+     if (!ViewBag.Saved)
+     {
+         <div class="alert-warning">Seems good! @ViewBag.User.FullName can still use @ViewBag.Consumable.Name.</div>
+         <form method="get" action="@Url.Action("Consume", new {id = @ViewBag.Consumable.Id})">
+             <input type="hidden" name="userCode" value="@ViewBag.User.Code"/>
+             <input type="hidden" name="commit" value="true"/>
+             <button type="submit">Commit</button>
+         </form>
+     }
+     else
+     {
+         <div class="alert-info">All done! Marked @ViewBag.Consumable.Name as used by @ViewBag.User.FullName</div>
+     }
+ }
+ else
+ {
+     <div class="alert-danger">Oh no! @ViewBag.User.FullName has already used their allocated @ViewBag.Consumable.Name.</div>
+ }
+}
+else
+{
+    <div class="alert-danger">The user does not exist!</div>
+}
+</div>

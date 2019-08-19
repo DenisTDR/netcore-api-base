@@ -1,0 +1,17 @@
+<h1>
+    Files
+</h1>
+
+<ul>
+    <li>
+        <a asp-action="List">List All Files</a>
+    </li>
+    <li>
+        <a href="#"
+           data-toggle="ajax-modal"
+           data-callback="window.location.reload"
+           data-url="@Url.Action("UploadFileModal", "FileUi")">
+            Upload a file
+        </a>
+    </li>
+</ul>

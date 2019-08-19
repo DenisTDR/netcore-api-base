@@ -1,0 +1,57 @@
+@using API.Base.Web.Base.Extensions.HtmlHelpers
+@model API.Base.Files.Models.Entities.FileEntity
+
+@{
+    var fieldGuid = Html.RandomId();
+}
+<div id="file-field-@(fieldGuid)">
+    <div class="file-placeholder pt-2 pb-2"
+         data-id="@Model?.Id"
+         data-original-name="@Model?.OriginalName"
+         data-link="@Model?.Link">
+        <a href="@Model?.Link" target="_blank">@(Model?.OriginalName??"none")</a>
+    </div>
+    <button type="button" class="btn btn-outline-primary btn-sm"
+            data-toggle="ajax-modal"
+            data-callback="fileField@(fieldGuid)Scripts.onUpdated"
+            data-url="@Url.Action("FileSelectModal", "FileUi")">
+        Change File
+    </button>
+    <button class="btn btn-outline-danger btn-sm clear-btn" type="button">Clear</button>
+</div>
+
+<script>
+
+    var fileField@(fieldGuid)Scripts = {
+        container: null,
+        onUpdated: function(e) {
+            if (!e) {
+                return;
+            }
+            this.updateFile(e);
+        },
+        onLoad: function() {
+            this.container = $("#file-field-@(fieldGuid)");
+            this.container.find(".clear-btn").click(function() {
+                fileField@(fieldGuid)Scripts.updateFile({});
+            });
+        },
+        updateFile: function(file) {
+            var fp = this.container.find(".file-placeholder");
+            var fpa = fp.find("a");
+            fp.data('link', file.link || null);
+            fp.data('original-name', file.originalName || null);
+            fp.data('id', file.id || null);
+            fpa.html(file.originalName || "none");
+            fpa.attr('href', file.link || null);
+
+            var resultInput = $("@(ViewData["input"])");
+            resultInput.val(file.id);
+        }
+    }
+
+    window.addEventListener('load',
+        function() {
+            fileField@(fieldGuid)Scripts.onLoad();
+        });
+</script>

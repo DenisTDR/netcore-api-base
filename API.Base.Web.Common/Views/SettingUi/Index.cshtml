@@ -1,0 +1,77 @@
+@using API.Base.Web.Base.Data
+@using API.Base.Web.Common.Models
+@model IEnumerable<API.Base.Web.Common.Models.Entities.SettingEntity>
+
+@inject ISettingsRepository Settings
+
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Slug)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Value)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Category)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Slug)
+            </td>
+            <td>
+                @if (item.Type == SettingType.File)
+                {
+                    var path = (string) await Settings.Get(item.Slug, item.Category);
+                    if (!string.IsNullOrEmpty(path))
+                    {
+                        var index = path.Length - 15;
+                        index = index < 0 ? 0 : index;
+                        <a href="@path" target="_blank"> ...@path.Substring(index)</a>
+                    }
+                    else
+                    {
+                        <span>none</span>
+                    }
+                }
+                else
+                {
+                    <b> @await Settings.Get(item.Slug, item.Category)</b>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category)
+            </td>
+            <td>
+                <small>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </small>
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

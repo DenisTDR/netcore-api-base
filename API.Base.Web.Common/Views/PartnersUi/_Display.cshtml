@@ -1,0 +1,86 @@
+@using API.Base.Web.Base.Extensions.HtmlHelpers
+@model API.Base.Web.Common.Partners.Models.Entities.PartnerEntity
+
+<div>
+    <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name) 
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Logo)
+            </dt>
+            <dd class="col-sm-10">
+                    <span>
+                        @Model.Logo
+                    </span>
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Type)
+            </dt>
+            <dd class="col-sm-10">
+                    <span>
+                        @Model.Type
+                    </span>
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Tier)
+            </dt>
+            <dd class="col-sm-10">
+                    <span>
+                        @Model.Tier
+                    </span>
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Url)
+            </dt>
+            <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Url) 
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Published)
+            </dt>
+            <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Published) 
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.OrderIndex)
+            </dt>
+            <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.OrderIndex) 
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Selector)
+            </dt>
+            <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Selector) 
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Deleted)
+            </dt>
+            <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Deleted) 
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Id)
+            </dt>
+            <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Id) 
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Created)
+            </dt>
+            <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Created) 
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Updated)
+            </dt>
+            <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Updated) 
+            </dd>
+    </dl>
+</div>
+

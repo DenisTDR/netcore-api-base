@@ -1,0 +1,13 @@
+@model API.Base.Web.Base.Auth.Models.Entities.User
+@{
+    ViewData["Title"] = "Confirm User role change";
+}
+Are you sure you want to 
+<b>remove</b>
+@Html.DisplayFor(model => model.Email)?
+
+<form asp-action="ConfirmDelete" >
+    <input type="hidden" asp-for="Id"/>
+    <input type="submit" value="Yes" class="btn btn-danger"/> |
+    <a asp-action="Users">Back to List</a>
+</form>

@@ -1,0 +1,127 @@
+@using API.Base.Web.Base.Extensions
+@using API.Base.Web.Base.Extensions.HtmlHelpers
+@using API.Base.Web.Common.Models
+@using Microsoft.Extensions.Options
+@model API.Base.Web.Common.Models.Entities.SettingEntity
+@inject IOptions<SettingsCategories> SettingsCategoriesOptions
+
+<div id="setting-form">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Slug"></label>
+        <input asp-for="Slug" class="form-control"/>
+        <span asp-validation-for="Slug" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Category"></label>
+        <select asp-for="Category" asp-items="SettingsCategoriesOptions.Value.List.Select(c => new SelectListItem(c.ToCamelCase(true), c))" class="form-control">
+        </select>
+        <span asp-validation-for="Category" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="card bg-light p-2 mb-2">
+        <div class="form-group">
+            <label asp-for="Type"></label>
+            <select asp-for="Type" asp-items="Html.GetEnumSelectList<SettingType>()" class="form-control setting_type_select" onchange="settingsFormScripts.settingTypeChanged()">
+            </select>
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
+        <div class="form-group value-field-form-group ">
+            @{
+                var fieldGuid = Html.RandomId();
+            }
+            <label asp-for="Value"></label>
+            <input asp-for="Value" class="form-control setting_value_input" id="file-field-@(fieldGuid)"/>
+            <span asp-validation-for="Value" class="text-danger"></span>
+
+            <div class="file-container">
+                @{
+                    await Html.RenderBlindPartialAsync("~/Views/FileUi/_FileField.cshtml", Model?.File,
+                        new ViewDataDictionary(ViewData) {{"input", "#file-field-" + fieldGuid}});
+                }
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<script>
+
+    var settingsFormScripts = {
+        container: null,
+        getSettingTypeName: function() {
+            var settingTypeSelect = this.container.find(".setting_type_select");
+            var settingTypeName =
+                this.container.find(".setting_type_select [value=" + settingTypeSelect.val() + "]");
+            return settingTypeName.text();
+        },
+        settingTypeChanged: function() {
+            var settingValueInput = this.container.find(".setting_value_input");
+            var settingTypeName = this.getSettingTypeName();
+
+            if (settingTypeName === this.origType) {
+                settingValueInput.val(this.origValue);
+            } else {
+                settingValueInput.val(null);
+            }
+
+            var changeFileButtonContainer = this.container.find(".file-container");
+            if (settingTypeName === "File") {
+                changeFileButtonContainer.show();
+                settingValueInput.attr("readonly", "readonly");
+            } else {
+                changeFileButtonContainer.hide();
+                settingValueInput.attr("readonly", false);
+            }
+
+
+            switch (settingTypeName) {
+            case "String":
+                settingValueInput.attr("type", "text");
+                break;
+            case "Number":
+                settingValueInput.attr("type", "number");
+                break;
+            case "Boolean":
+                settingValueInput.attr("type", "checkbox");
+                settingValueInput.val("true");
+                if (this.origValue === "true") {
+                    settingValueInput.attr("checked", "checked");
+                } else {
+                    settingValueInput.attr("checked");
+                }
+                break;
+            case "File":
+                settingValueInput.attr("type", "text");
+                this.fileChangedCallback(this.container.find('.file-placeholder').data());
+                break;
+            default:
+            }
+        },
+        fileChangedCallback: function(e) {
+            var settingValueInput = this.container.find(".setting_value_input");
+            settingValueInput.val(e.id);
+        },
+        onLoad: function() {
+
+            this.container = $("#setting-form");
+            var settingValueInput = this.container.find(".setting_value_input");
+            this.origValue = settingValueInput.val();
+            this.origType = this.getSettingTypeName();
+            settingsFormScripts.settingTypeChanged();
+        },
+        origValue: null,
+        origType: null
+    }
+
+
+    window.addEventListener('load',
+        function() {
+            settingsFormScripts.onLoad();
+        });
+</script>

@@ -1,0 +1,75 @@
+@using API.Base.Web.Base.Extensions.HtmlHelpers
+@using API.Base.Web.Common.Helpers
+@model IEnumerable<API.Base.Web.Common.OgMetadata.OgMetadataEntity>
+
+@{
+    ViewData["Title"] = "OgMetadata";
+}
+
+<h2>@ViewData["Title"]</h2>
+@{
+    @Html.RenderBlindPartialAsync("_ShowHideColumns", new ShowHideColumnsModel()
+          {
+              Columns = new List<string>()
+              {
+                  "Slug",
+                  "Title",
+                  "Description",
+                  "Type",
+                  "Image"
+              }
+          })
+}
+<div class="d-flex justify-content-end pb-2">
+    <a class="btn btn-primary" asp-action="Create">Create new OgMetadata</a>
+</div>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Slug)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Type)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Image)
+        </th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <span>@Html.DisplayFor(modelItem => item.Slug)</span>
+            </td>
+            <td>
+                <span>@Html.DisplayFor(modelItem => item.Title)</span>
+            </td>
+            <td>
+                <span>@Html.DisplayFor(modelItem => item.Description)</span>
+            </td>
+            <td>
+                <span>@Html.DisplayFor(modelItem => item.Type)</span>
+            </td>
+            <td>
+                @{await Html.RenderBlindPartialAsync("_FileLinkPreview", item.Image, ViewData);}
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> <span></span>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> <span></span>
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> <span></span>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

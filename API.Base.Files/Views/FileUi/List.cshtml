@@ -1,0 +1,97 @@
+@model IEnumerable<API.Base.Files.Models.Entities.FileEntity>
+
+@{
+    ViewData["Title"] = "Files";
+}
+<h1>Files</h1>
+
+<ul>
+    <li>
+        <a asp-action="Index">Back to Index</a>
+    </li>
+    <li>
+        <a href="#"
+           data-toggle="ajax-modal"
+           data-callback="window.location.reload"
+           data-url="@Url.Action("UploadFileModal", "FileUi")">
+            Upload a file
+        </a>
+    </li>
+</ul>
+
+<style>
+    .image-preview-container img {
+        max-width: 80px;
+        max-height: 50px;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.OriginalName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            Preview
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Protected)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.OriginalName)
+            </td>
+            <td>
+                <a href="@Html.DisplayFor(modelItem => item.Link)" target="_blank">
+                    @Html.DisplayFor(modelItem => item.Name).@Html.DisplayFor(modelItem => item.Extension)
+                </a>
+            </td>
+            <td>
+                <div class="image-preview-container">
+                    @if (item.IsImage)
+                    {
+                        <img src="@item.Link"/>
+                    }
+                    else
+                    {
+                        <span>--</span>
+                    }
+                </div>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Protected)
+            </td>
+            <td>
+                @* <a asp-action="Details" asp-route-id="@item.Id">Details</a> | *@
+                
+                @if (!item.Protected)
+                {
+                    <a data-toggle="ajax-modal"
+                       href="#"
+                       data-url="@Url.Action("Delete", "FileUi", new {id = item.Id})">
+                        Delete
+                    </a>  
+                }
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

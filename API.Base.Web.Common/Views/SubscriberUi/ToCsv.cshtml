@@ -1,0 +1,9 @@
+@model System.Collections.Generic.IEnumerable<API.Base.Web.Common.Subscriber.SubscriberEntity>
+@{
+    Layout = null;
+}
+email,created
+@foreach (var subscriberEntity in Model)
+{
+    @Html.Raw(subscriberEntity.Email + "," + subscriberEntity.Created + "\n")
+}

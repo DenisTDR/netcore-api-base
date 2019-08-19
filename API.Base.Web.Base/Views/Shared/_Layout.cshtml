@@ -1,0 +1,116 @@
+﻿@using API.Base.Web.Base.Data
+
+@inject ISettingsRepository Settings
+@{
+    var isAdmin = Context.User.IsInRole("Admin");
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - @Settings.Get("site_name").Result</title>
+    <link rel="icon" type="image/x-icon" href="/api/admin/favicon.ico">
+    <environment include="Development">
+        <link rel="stylesheet" href="~/api/admin/lib/bootstrap/dist/css/bootstrap.css"/>
+        <link rel="stylesheet" href="~/api/admin/data-tables/datatables.min.css"/>
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css"
+              asp-fallback-href="~/api/admin/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute"
+              crossorigin="anonymous"
+              integrity="sha256-eSi1q2PG6J7g7ib17yAaWMcrr5GrtohYChqibrV7PBE="/>
+
+        <link rel="stylesheet" type="text/css"
+              href="https://cdn.datatables.net/v/bs4/dt-1.10.18/b-1.5.6/b-colvis-1.5.6/b-html5-1.5.6/b-print-1.5.6/cr-1.5.0/fc-3.2.5/fh-3.1.4/kt-2.5.0/r-2.2.2/rg-1.1.0/rr-1.2.4/sc-2.0.0/datatables.min.css"/>
+
+    </environment>
+    <link rel="stylesheet" href="~/api/admin/css/site.css"/>
+    <link rel="stylesheet" href="~/api/admin/lib/font-awesome/css/font-awesome.min.css"/>
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3">
+        <div class="container">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                @if (await Settings.Get("logo") != null)
+                {
+                    <img src="@await Settings.Get("logo")" height="25"/>
+                }
+                else
+                {
+                    @await Settings.Get("site_name")
+                    <span></span>
+                    @await Settings.Get("edition_year")
+                }
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <partial name="_LoginPartial"/>
+                <ul class="navbar-nav flex-grow-1">
+                    @if (isAdmin)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="AdminDashboard" asp-action="Index">Admin</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/api/docs" target="_blank">Swagger</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    <partial name="_CookieConsentPartial"/>
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
+
+<footer class="border-top footer bg-dark text-white">
+    <div class="container">
+        &copy; @await Settings.Get("edition_year") - @await Settings.Get("site_name")
+    </div>
+</footer>
+@Html.Partial("_ProcessingDialog")
+<environment include="Development">
+    <script id="jquery_script" src="~/api/admin/lib/jquery/dist/jquery.js"></script>
+    <script src="~/api/admin/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <script src="~/api/admin/lib/ckeditor/ckeditor.js"></script>
+    <script src="~/api/admin/data-tables/datatables.min.js"></script>
+</environment>
+<environment exclude="Development">
+    <script id="jquery_script" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+            asp-fallback-src="~/api/admin/lib/jquery/dist/jquery.min.js"
+            asp-fallback-test="window.jQuery"
+            crossorigin="anonymous"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"
+            asp-fallback-src="~/api/admin/lib/bootstrap/dist/js/bootstrap.bundle.min.js"
+            asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+            crossorigin="anonymous"
+            integrity="sha256-E/V4cWE4qvAeO5MOhjtGtqDzPndRO1LBk8lJ/PR7CA4=">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.11.2/ckeditor.js"
+            asp-fallback-src="~/api/admin/lib/ckeditor/ckeditor.js"
+            crossorigin="anonymous"
+            integrity="sha256-iqdex1f0MYYuZtklQ95Pp8EvQMh5Lo/WrXIGAj1s58U=">
+    </script>
+    <script type="text/javascript"
+            src="https://cdn.datatables.net/v/bs4/dt-1.10.18/b-1.5.6/b-colvis-1.5.6/b-html5-1.5.6/b-print-1.5.6/cr-1.5.0/fc-3.2.5/fh-3.1.4/kt-2.5.0/r-2.2.2/rg-1.1.0/rr-1.2.4/sc-2.0.0/datatables.min.js">
+    </script>
+</environment>
+<script src="~/api/admin/js/site.js" asp-append-version="true"></script>
+<script src="~/api/admin/js/custom-data-tables.js" asp-append-version="true"></script>
+
+@RenderSection("Scripts", required: false)
+</body>
+</html>

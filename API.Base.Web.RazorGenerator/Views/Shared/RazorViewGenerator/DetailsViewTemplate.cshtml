@@ -1,0 +1,21 @@
+@model API.Base.Web.RazorGenerator.Models.Details.DetailsTemplateModel
+@@model @Model.FullTypeName
+@@{
+ViewData["Title"] = "@Model.PageTitle";
+}
+
+<h2>@Model.EntityName: @@Model.ToString()</h2>
+<hr/>
+@Html.Raw("<partial name=\"_Display\"></partial>")
+
+<div>
+    @for (var index = 0; index < Model.Actions.Count; index++)
+    {
+        var action = Model.Actions[index];
+        @Html.Raw("<a asp-action=\"" + action + "\" asp-route-id=\"@Model.Id\">" + action + "</a>")
+        <span>@(index != Model.Actions.Count - 1 ? "|" : "")</span>
+    }
+</div>
+<div>
+    <a href='@@Url.Action("Index")'>Back to list</a>
+</div>

@@ -1,0 +1,15 @@
+@model API.Base.Web.Base.Auth.Models.Entities.User
+@{
+    ViewData["Title"] = "Confirm User role change";
+}
+Are you sure you want to 
+<b>@(Context.Request.Query["add"] == "true" ? "add": "remove")</b>
+role <b>@(Context.Request.Query["role"])</b>
+@(Context.Request.Query["add"] == "true" ? "to": "from")
+@Html.DisplayFor(model => model.Email)?
+
+<form asp-action="ChangeRole" asp-route-add="@Context.Request.Query["add"]" asp-route-role="@Context.Request.Query["role"]">
+    <input type="hidden" asp-for="Id"/>
+    <input type="submit" value="Yes" class="btn btn-danger"/> |
+    <a asp-action="Users">Back to List</a>
+</form>

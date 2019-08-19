@@ -1,0 +1,121 @@
+@model IEnumerable<API.Base.Files.Models.Entities.FileEntity>
+@{
+    Layout = null;
+}
+
+<style>
+    .image-preview-container img {
+        max-width: 80px;
+        max-height: 50px;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+
+<div id="file-list-modal">
+    <div class="modal fade smart-modal" tabindex="-1" role="dialog">
+        <div class=" modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select a file</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-primary mb-2"
+                                    data-toggle="ajax-modal"
+                                    data-callback="fileListModalScripts.fileAdded"
+                                    data-url="@Url.Action("UploadFileModal", "FileUi")">
+                                Upload a file
+                            </button>
+                        </div>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.OriginalName)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Name)
+                                </th>
+                                <th>
+                                    Preview
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.OriginalName)
+                                    </td>
+                                    <td>
+                                        <a href="@Html.DisplayFor(modelItem => item.Link)" target="_blank">
+                                            @Html.DisplayFor(modelItem => item.Name).@Html.DisplayFor(modelItem => item.Extension)
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="image-preview-container">
+                                            @if (item.IsImage)
+                                            {
+                                                <img src="@item.Link"/>
+                                            }
+                                            else
+                                            {
+                                                <span>--</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-outline-primary select-file-btn btn-sm" data-id="@item.Id" data-original-name="@item.OriginalName" data-link="@item.Link">Select</button>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var fileListModalScripts = {
+        container: null,
+        onLoad: function() {
+            this.container = $("#file-list-modal");
+            this.container.find(".select-file-btn").click(function(e) {
+                fileListModalScripts.fileSelected(e, this);
+            });
+        },
+        fileSelected: function(event, element) {
+            element = $(element);
+            var fileData = element.data();
+
+            var modal = this.container.find(".modal");
+            modal.data("result", fileData);
+            modal.modal('hide');
+        },
+        fileAdded: function(fileData) {
+            if (!fileData) {
+                return;
+            }
+            console.log('fileAdded', fileData);
+            var modal = this.container.find(".modal");
+            modal.data("result", fileData);
+            modal.modal('hide');
+        }
+    }
+
+    fileListModalScripts.onLoad();
+</script>

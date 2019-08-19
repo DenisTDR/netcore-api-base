@@ -1,0 +1,67 @@
+@using API.Base.Web.Base.Extensions.HtmlHelpers
+@using API.Base.Web.Common.Helpers
+@model IEnumerable<API.Base.Web.Common.Consumables.Models.ConsumableEntity>
+
+@{
+    ViewData["Title"] = "Consumable";
+}
+
+<h2>@ViewData["Title"]</h2>
+@{
+    await Html.RenderBlindPartialAsync("_ShowHideColumns", new ShowHideColumnsModel
+    {
+        Columns = new List<string>()
+        {
+            "Name",
+            "Count",
+            "ConsumedRecords"
+        }
+    });
+}
+<div class="row">
+    <div class="col-12 col-md-6">
+    </div>
+    <div class="col-12 col-md-6 d-flex justify-content-end pb-2">
+        <a class="btn btn-outline-primary mr-2" asp-action="ReOrder">ReOrder</a>
+        <a class="btn btn-outline-primary" asp-action="Create">Create new Consumable</a>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Count)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TotalConsumed)
+        </th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <span>@Html.DisplayFor(modelItem => item.Name)</span>
+            </td>
+            <td>
+                <span>@Html.DisplayFor(modelItem => item.Count)</span>
+            </td>
+            <td>
+                <span>@Html.DisplayFor(modelItem => item.TotalConsumed)</span>
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> <span></span>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> <span></span>
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> <span></span>
+                <a asp-action="Scan" asp-route-id="@item.Id">Scan</a> <span></span>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

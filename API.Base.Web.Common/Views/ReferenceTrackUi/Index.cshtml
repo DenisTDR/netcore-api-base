@@ -1,0 +1,44 @@
+@model IEnumerable<API.Base.Web.Common.ReferenceTrack.ReferenceTrackEntity>
+
+@{
+    var list = Model.GroupBy(c => c.Code).Select(x => new {Code = x.FirstOrDefault()?.Code, Count = x.Count()}).ToList();
+    ViewData["Title"] = "Reference tracking";
+}
+
+<h2>
+    Reference Tracks
+</h2>
+
+@if (list.Any())
+{
+    <p>
+        Summary:
+        @Html.Raw(string.Join(" | ", list.Select(rt => $"<b>{rt.Code}</b> -> <b>{rt.Count}</b>")))
+    </p>
+}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Code)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Created)
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var referenceTrack in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => referenceTrack.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => referenceTrack.Created)
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

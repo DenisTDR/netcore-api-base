@@ -1,0 +1,53 @@
+@model IEnumerable<API.Base.Web.Common.Subscriber.SubscriberEntity>
+
+@{
+    ViewData["Title"] = "Subscribers";
+}
+
+
+<h2>
+    Subscribers
+</h2>
+<div class="d-flex justify-content-between">
+    <div>
+        <span>Total: <b>@Model.Count()</b></span>
+        <span class="pl-4">Last: <b> @Model.LastOrDefault()?.Created</b></span>
+    </div>
+    <div>
+        <a asp-action="ToCsv">To CSV</a>
+    </div>
+</div>
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            #
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th>
+            When
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @{
+        var i = 0;
+    }
+    @foreach (var subscriber in Model)
+    {
+        <tr>
+            <td>
+                @(++i)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => subscriber.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => subscriber.Created)
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

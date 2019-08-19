@@ -1,0 +1,20 @@
+@model API.Base.Web.Common.Helpers.ShowHideColumnsModel
+
+<button class="btn btn-outline-primary mb-3 mt-3" 
+        type="button" 
+        data-toggle="collapse" 
+        data-target="#collapseHideColumns" 
+        aria-expanded="false" 
+        aria-controls="collapseHideColumns">
+    Show/Hide Columns
+</button>
+<div class="collapse mb-3" id="collapseHideColumns">
+    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+    @foreach (var item in Model.Columns)
+    {
+        <label class="btn btn-outline-secondary toggle-vis" data-column="@Model.Columns.IndexOf(@item)">
+            <input type="checkbox"> @item.Trim()
+        </label>
+    }
+    </div>
+</div>

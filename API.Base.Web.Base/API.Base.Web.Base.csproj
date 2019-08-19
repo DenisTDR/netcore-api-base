@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <OutputType>Library</OutputType>
+        <RazorCompileOnBuild>false</RazorCompileOnBuild>
+        <RazorCompileOnPublish>false</RazorCompileOnPublish>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.App" />
+        <PackageReference Include="AutoMapper" Version="8.0.0" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.1.4" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Remove="wwwroot\api\swagger\index.html">
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="wwwroot\api\swagger\index.html" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\api\admin\data-tables" />
+    </ItemGroup>
+</Project>

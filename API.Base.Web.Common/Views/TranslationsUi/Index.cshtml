@@ -1,0 +1,61 @@
+@model IEnumerable<API.Base.Web.Common.Models.Entities.TranslationEntity>
+
+@{
+ViewData["Title"] = "Translation";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="d-flex justify-content-end pb-2">
+    <a class="btn btn-primary" asp-action="Create">Create new Translation</a>
+</div>
+
+<table class="table">
+    <thead>
+    <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Slug)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Value)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Language)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Updated)
+            </th>
+                    <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+    <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Slug)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Language)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Updated)
+            </td>
+                    <td>
+<a asp-action="Edit" asp-route-id="@item.Id">Edit</a>                    <span></span>
+<a asp-action="Details" asp-route-id="@item.Id">Details</a>                    <span></span>
+<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>                    <span></span>
+            </td>
+    </tr>
+    }
+    </tbody>
+</table>

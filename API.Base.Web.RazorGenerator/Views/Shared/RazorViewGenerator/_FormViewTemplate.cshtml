@@ -1,0 +1,72 @@
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@using API.Base.Web.Base.Models.Entities
+@using API.Base.Web.RazorGenerator.Extensions
+@model API.Base.Web.RazorGenerator.Models.Form.FormTemplateModel
+
+@if (Model.ImportHtmlHelpers)
+{
+    @Html.Raw("@using API.Base.Web.Base.Extensions.HtmlHelpers\n")
+    ;
+}
+@if (Model.InjectDataLayer)
+{
+    @Html.Raw("@inject API.Base.Web.Base.Database.DataLayer.IDataLayer DataLayer\n")
+}
+@@model @Model.FullTypeName
+
+<div>
+    @foreach (var prop in Model.Properties)
+    {
+        <div class="form-group">
+            @@Html.LabelFor(model => model.@prop.Name)
+
+            @if (prop.PropertyType == typeof(API.Base.Files.Models.Entities.FileEntity))
+            {
+                @Html.Raw("@{\n")
+                @Html.Raw("var fieldGuid" + prop.Name + " = Html.RandomId();\n")
+                @Html.Raw("}\n")
+
+                @Html.Raw("<input asp-for=\"" + prop.Name + ".Id\" class=\"form-control setting_value_input\" id=\"file-field-@(fieldGuid" + prop.Name + ")\" readonly/>\n")
+                @Html.Raw("@{\n")
+                @Html.Raw("await Html.RenderBlindPartialAsync(\"~/Views/FileUi/_FileField.cshtml\", Model?." + prop.Name + ", \n")
+                @Html.Raw(" new ViewDataDictionary(ViewData) {{\"input\", \"#file-field-\" + fieldGuid" + prop.Name + "}});\n")
+                @Html.Raw("}\n")
+            }
+            else if (prop.PropertyType.IsEnum)
+            {
+                @Html.Raw("<select asp-for=\"" + prop.Name + "\" asp-items=\"Html.GetEnumSelectList<" + prop.PropertyType.FullName + ">()\" class=\"form-control\">\n                " +
+                          "    <option selected=\"selected\" value=\"\">Please select</option>\n         " +
+                          "   </select>")
+                ;
+            }
+            else if (prop.HasDataType(DataType.Html))
+            {
+                @Html.Raw("@{\n")
+                @Html.Raw("var fieldGuid" + prop.Name + " = Html.RandomId();\n")
+                @Html.Raw("}\n")
+
+                @Html.Raw("@Html.TextAreaFor(model => model." + prop.Name + ", new { id = fieldGuid" + prop.Name + ", @class = \"form-control\" })\n")
+
+                @Html.Raw("<script>\n")
+                @Html.Raw("function initCkEditorField" + prop.Name + "() { CKEDITOR.replace(\"@fieldGuid" + prop.Name + "\");}\n")
+                @Html.Raw("window.addEventListener('load',function() {initCkEditorField" + prop.Name + "();});\n")
+                @Html.Raw("</script>\n")
+            }
+            else if (!typeof(IEntity).IsAssignableFrom(prop.PropertyType))
+            {
+                @Html.Raw("@Html.EditorFor(model => model." + prop.Name + ", new { htmlAttributes = new { @class = \"form-control\" }})")
+            }
+            else
+            {
+                @Html.Raw("<select asp-for=\"" + prop.Name + ".Id\" \n")
+                @Html.Raw("asp-items=\"(await DataLayer.Repo<" + prop.PropertyType.FullName + ">().GetAll()).Select(p => new SelectListItem(p.ToString(), p.Id))\" \n")
+                @Html.Raw("class=\"form-control\">\n")
+                <option selected="selected" value="">Please select</option>
+                @Html.Raw(" </select>")
+            }
+
+            @@Html.ValidationMessageFor(model => model.@prop.Name, "", new { @@class = "text-danger" })
+        </div>
+    }
+</div>
