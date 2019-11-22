@@ -72,7 +72,7 @@ namespace API.Base.Web.Common.Data
             if (trans?.Value == null)
             {
                 var msg = "No translation for '" + translationSlug + "'.";
-                _logger.Log(new AuditEntity {Level = LogLevel.Critical, Data = msg});
+                _logger.Log(new LogsAuditEntity {Level = LogLevel.Critical, Data = msg});
                 _logger.LogError(msg);
                 return null;
             }

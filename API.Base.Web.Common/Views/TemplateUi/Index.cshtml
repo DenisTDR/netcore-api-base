@@ -7,17 +7,17 @@
 }
 
 <h2>@ViewData["Title"]</h2>
-@Html.RenderBlindPartialAsync("_ShowHideColumns", new ShowHideColumnsModel()
-{
-    Columns = new List<string>()
-    {
-        "Slug",
-        "Title",
-        "Content",
-        "Description",
-        "Type"
-    }
-})
+@{ await Html.RenderBlindPartialAsync("_ShowHideColumns", new ShowHideColumnsModel()
+   {
+       Columns = new List<string>()
+       {
+           "Slug",
+           "Title",
+           "Content",
+           "Description",
+           "Type"
+       }
+   }); }
 <div class="d-flex justify-content-end pb-2">
     <a class="btn btn-primary" asp-action="Create">Create new Template</a>
 </div>

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using API.Base.Web.Base.Attributes;
-using API.Base.Web.Base.Auth.Models.Entities;
 using API.Base.Web.Base.Models.Entities;
 
 namespace API.Base.Web.Base.Extensions

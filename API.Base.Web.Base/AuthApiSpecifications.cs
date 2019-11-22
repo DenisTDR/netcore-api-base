@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using API.Base.Web.Base.ApiBuilder;
 using API.Base.Web.Base.Auth.Jwt;
 using API.Base.Web.Base.Auth.Models.Entities;
 using API.Base.Web.Base.Database;
-using API.Base.Web.Base.Extensions;
 using API.Base.Web.Base.Helpers;
-using API.Base.Web.Base.Models.EntityMaps;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;

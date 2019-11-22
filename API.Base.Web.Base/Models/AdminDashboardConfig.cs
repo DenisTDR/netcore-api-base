@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace API.Base.Web.Base.Models
@@ -22,21 +21,5 @@ namespace API.Base.Web.Base.Models
 
         public string Name { get; set; }
         public List<AdminDashboardLink> Links { get; set; }
-    }
-
-    public class AdminDashboardLink : ControllerActionLinkModel
-    {
-        public AdminDashboardLink()
-        {
-        }
-
-        public AdminDashboardLink(string text, string url) : base(text, url)
-        {
-        }
-
-        public AdminDashboardLink(string text, string controller, string action = "Index") : base(text, controller,
-            action)
-        {
-        }
     }
 }

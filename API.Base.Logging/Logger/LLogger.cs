@@ -1,5 +1,7 @@
 ﻿using System;
-using API.Base.Logging.Managers;
+using API.Base.Logging.Managers.AuditManager;
+using API.Base.Logging.Managers.LogManager;
+using API.Base.Logging.Managers.UiLogManager;
 using API.Base.Logging.Models.Entities;
 using API.Base.Web.Base.Factories;
 using API.Base.Web.Base.Misc.PatchBag;
@@ -11,17 +13,16 @@ namespace API.Base.Logging.Logger
     {
         private readonly ILogManager _logManager;
         private readonly IAuditManager _auditManager;
+        private readonly IUiLogManager _uiLogManager;
 
         public string Tag { get; private set; }
 
         public LLogger()
         {
-//            Console.WriteLine("LLogger ctor");
-
             var dataLayer = DataLayerFactory.BuildDataLayer();
-
             _logManager = new LogManager();
             _auditManager = new AuditManager(dataLayer);
+            _uiLogManager = new UiLogManager(dataLayer);
         }
 
         public void SetTag(string tag)
@@ -45,9 +46,9 @@ namespace API.Base.Logging.Logger
             Log(log);
         }
 
-        public void Log(LogBaseEntity log)
+        public void Log(ILog log)
         {
-            if (log is AuditEntity entity)
+            if (log is LogsAuditEntity entity)
             {
                 LogAudit(entity);
             }
@@ -57,7 +58,7 @@ namespace API.Base.Logging.Logger
             }
         }
 
-        public void Log(LogLevel level, LogBaseEntity log)
+        public void Log(LogLevel level, ILog log)
         {
             log.Level = level;
             Log(log);
@@ -85,16 +86,26 @@ namespace API.Base.Logging.Logger
             _logManager.StoreAsync(log);
         }
 
-        private void LogAudit(AuditEntity audit)
+        private void LogAudit(LogsAuditEntity logsAudit)
         {
-            audit.Created = DateTime.Now;
-            audit.Tag = Tag;
-            _auditManager.Store(audit);
+            logsAudit.Created = DateTime.Now;
+            logsAudit.Tag = Tag;
+            _auditManager.Store(logsAudit);
         }
 
-        public void UpdateAuditLog(EntityPatchBag<AuditEntity> epbae)
+        public void UpdateAuditLog(EntityPatchBag<LogsAuditEntity> epbae)
         {
-            _auditManager.UpdateAuditLog(epbae);
+            _auditManager.UpdateStoredLog(epbae);
+        }
+
+        public void UiLog(LogsUiEntity log)
+        {
+            _uiLogManager.Store(log);
+        }
+
+        public void UpdateUiLog(EntityPatchBag<LogsUiEntity> epbule)
+        {
+            _uiLogManager.UpdateStoredLog(epbule);
         }
     }
 }

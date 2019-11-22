@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using API.Base.Logging.Logger;
 using API.Base.Logging.Models.Entities;
 using API.Base.Web.Base.Auth.Models.Entities;
 using API.Base.Web.Base.Controllers.Ui;
-using API.Base.Web.Base.Database.DataLayer;
-using API.Base.Web.Base.Database.Repository;
-using API.Base.Web.Base.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Identity;
@@ -20,13 +16,13 @@ namespace API.Base.Logging.Filters
     public class AdminLogFilter : IActionFilter
     {
         public UserManager<User> UserManager { get; }
+        
+        private readonly ILLogger _logger;
 
-        public IRepository<AdminLogEntity> LogsRepo;
-
-        public AdminLogFilter(UserManager<User> userManager, IDataLayer dataLayer)
+        public AdminLogFilter(UserManager<User> userManager, ILLogger logger)
         {
             UserManager = userManager;
-            LogsRepo = dataLayer.Repo<AdminLogEntity>();
+            _logger = logger;
         }
 
         public void OnActionExecuting(ActionExecutingContext context)
@@ -35,7 +31,10 @@ namespace API.Base.Logging.Filters
             {
                 if (context.HttpContext.Request.Method == "POST")
                 {
-                    LogPostRequest(context);
+                    if (IsUiController(context))
+                    {
+                        LogPostRequest(context);
+                    }
                 }
             }
             catch (Exception e)
@@ -47,26 +46,20 @@ namespace API.Base.Logging.Filters
         public void OnActionExecuted(ActionExecutedContext context)
         {
         }
+        public bool IsUiController(ActionExecutingContext context)
+        {
+            return context.ActionDescriptor is ControllerActionDescriptor actionDescriptor &&
+                   typeof(UiController).IsAssignableFrom(actionDescriptor.ControllerTypeInfo);
+        }
 
         private void LogPostRequest(ActionExecutingContext context)
         {
-            if (!(context.Controller is UiController))
-            {
-                return;
-            }
-
             if (!context.ModelState.IsValid)
             {
                 return;
             }
 
-            if (!(context.ActionDescriptor is ControllerActionDescriptor))
-            {
-                return;
-            }
-
             var request = context.HttpContext.Request;
-
 
             var actionDescriptor = (ControllerActionDescriptor) context.ActionDescriptor;
 
@@ -76,7 +69,7 @@ namespace API.Base.Logging.Filters
 
             var controller = (UiController) context.Controller;
 
-            var adminLog = new AdminLogEntity
+            var uiLog = new LogsUiEntity
             {
                 Action = actionDescriptor.ActionName,
                 Controller = actionDescriptor.ControllerTypeInfo.Name,
@@ -86,7 +79,7 @@ namespace API.Base.Logging.Filters
                 TargetId = targetId,
                 TraceIdentifier = context.HttpContext.TraceIdentifier
             };
-            LogsRepo.Add(adminLog).Wait();
+            _logger.UiLog(uiLog);
         }
 
         private string PatchFormData(IFormCollection formCollection)

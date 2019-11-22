@@ -7,14 +7,18 @@ namespace API.Base.Logging.Logger
     public interface ILLogger
     {
         void Log(LogLevel level, string message);
-        void Log(LogBaseEntity log);
-        void Log(LogLevel level, LogBaseEntity ligaLog);
+        void Log(ILog log);
+        void Log(LogLevel level, ILog ligaLog);
 
 
         void LogError(string message);
         void LogWarn(string message);
         void LogInfo(string message);
 
-        void UpdateAuditLog(EntityPatchBag<AuditEntity> euhae);
+        void UpdateAuditLog(EntityPatchBag<LogsAuditEntity> euhae);
+
+        void UiLog(LogsUiEntity log);
+
+        void UpdateUiLog(EntityPatchBag<LogsUiEntity> epbule);
     }
 }

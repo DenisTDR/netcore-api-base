@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace API.Base.Web.RazorGenerator.Models
 {
     public abstract class BaseTemplateModel

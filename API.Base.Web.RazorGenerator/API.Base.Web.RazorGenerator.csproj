@@ -12,8 +12,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\API.Base.Web.Base\API.Base.Web.Base.csproj" />
-      <ProjectReference Include="..\API.Base.Files\API.Base.Files.csproj" />
+        <ProjectReference Include="..\API.Base.Web.Base\API.Base.Web.Base.csproj" />
+        <ProjectReference Include="..\API.Base.Files\API.Base.Files.csproj" />
     </ItemGroup>
 
 </Project>

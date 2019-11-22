@@ -1,5 +1,4 @@
 @using System.ComponentModel.DataAnnotations
-@using System.Reflection
 @using API.Base.Web.Base.Models.Entities
 @using API.Base.Web.RazorGenerator.Extensions
 @model API.Base.Web.RazorGenerator.Models.Form.FormTemplateModel
@@ -7,7 +6,6 @@
 @if (Model.ImportHtmlHelpers)
 {
     @Html.Raw("@using API.Base.Web.Base.Extensions.HtmlHelpers\n")
-    ;
 }
 @if (Model.InjectDataLayer)
 {
@@ -36,9 +34,8 @@
             else if (prop.PropertyType.IsEnum)
             {
                 @Html.Raw("<select asp-for=\"" + prop.Name + "\" asp-items=\"Html.GetEnumSelectList<" + prop.PropertyType.FullName + ">()\" class=\"form-control\">\n                " +
-                          "    <option selected=\"selected\" value=\"\">Please select</option>\n         " +
+                          "    <option selected=\"selected\" value=\"\">Not selected</option>\n         " +
                           "   </select>")
-                ;
             }
             else if (prop.HasDataType(DataType.Html))
             {
@@ -66,6 +63,7 @@
                 @Html.Raw(" </select>")
             }
 
+            @@Html.DescriptionFor(model => model.@prop.Name)
             @@Html.ValidationMessageFor(model => model.@prop.Name, "", new { @@class = "text-danger" })
         </div>
     }

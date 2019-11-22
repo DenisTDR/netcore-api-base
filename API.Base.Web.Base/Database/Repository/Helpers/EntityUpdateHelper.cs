@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using API.Base.Web.Base.Auth.Models.Entities;
 using API.Base.Web.Base.Database.DataLayer;
 using API.Base.Web.Base.Extensions;
 using API.Base.Web.Base.Misc.PatchBag;
@@ -41,18 +38,14 @@ namespace API.Base.Web.Base.Database.Repository.Helpers
             foreach (var uep in updateableEntityProperties)
             {
                 var e = (IEntity) uep.GetValue(eub.Model);
-                if (e == null)
+                if (e == null || string.IsNullOrEmpty(e.Id))
                 {
                     uep.SetValue(existing, null);
                 }
                 else
                 {
                     var propRepo = _dataLayer.Repository(uep.PropertyType);
-                    var e2 = await propRepo.GetOneEntity(e.Selector);
-                    if (e2 == null)
-                    {
-                        e2 = await propRepo.GetOneEntity(e.Id);
-                    }
+                    var e2 = await propRepo.GetOneEntity(e.Id);
 
                     uep.SetValue(existing, e2);
                 }
@@ -86,10 +79,15 @@ namespace API.Base.Web.Base.Database.Repository.Helpers
             {
                 var crtValue = (IEntity) uep.GetValue(current);
                 var existingValue = (IEntity) uep.GetValue(existing);
+                if (string.IsNullOrEmpty(crtValue?.Id))
+                {
+                    crtValue = null;
+                }
+
+                if (crtValue == null && existingValue == null) continue;
+
                 if (crtValue == null || existingValue == null
-                                     || (!string.IsNullOrEmpty(crtValue.Id) && crtValue.Id != existingValue.Id)
-                                     || (!string.IsNullOrEmpty(crtValue.Selector) &&
-                                         crtValue.Selector != existingValue.Selector))
+                                     || !string.IsNullOrEmpty(crtValue.Id) && crtValue.Id != existingValue.Id)
                 {
                     epb.PropertiesToUpdate.Add(uep.Name, true);
                 }

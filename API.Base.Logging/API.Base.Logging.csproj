@@ -9,10 +9,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Properties" />
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\API.Base.Web.Base\API.Base.Web.Base.csproj" />
     </ItemGroup>
 

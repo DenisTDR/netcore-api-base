@@ -1,13 +1,8 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using API.Base.Web.Base.Auth.Models.Entities;
 using API.Base.Web.Base.Database;
-using API.Base.Web.Base.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Base.Web.Base.Controllers.Ui
 {

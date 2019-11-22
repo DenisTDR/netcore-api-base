@@ -50,7 +50,12 @@ namespace API.Base.Logging.Filters
                 _logger.Log(LogLevel.Information,
                     $"[{controllerName}.{actionName}][{context.HttpContext.TraceIdentifier}] Begin");
 
-                LogAudit(context);
+
+                if (ShouldAuditRequest(context))
+                {
+                    LogAudit(context);
+                }
+
             }
             catch (Exception e)
             {
@@ -75,7 +80,11 @@ namespace API.Base.Logging.Filters
                 durationStr = duration.Seconds >= 1 ? duration.Seconds + "." : "";
                 durationStr += duration.Milliseconds;
 
-                FinalizeRequestAudit(context, duration);
+                if (ShouldAuditRequest(context))
+                {
+                    FinalizeRequestAudit(context, duration);
+                }
+
             }
 
             _logger.Log(LogLevel.Information,
@@ -84,11 +93,6 @@ namespace API.Base.Logging.Filters
 
         private void FinalizeRequestAudit(ResourceExecutedContext context, TimeSpan duration)
         {
-            if (!ShouldAuditRequest(context))
-            {
-                return;
-            }
-
             var ms = (int) duration.TotalMilliseconds;
             var result = "none";
             if (context.Result is ObjectResult objectResult)
@@ -96,10 +100,10 @@ namespace API.Base.Logging.Filters
                 result = JsonConvert.SerializeObject(objectResult.Value);
             }
 
-            var epb = new EntityPatchBag<AuditEntity>
+            var epb = new EntityPatchBag<LogsAuditEntity>
             {
                 Id = context.HttpContext.TraceIdentifier,
-                Model = new AuditEntity
+                Model = new LogsAuditEntity
                 {
                     Result = result,
                     ResponseDuration = ms
@@ -154,7 +158,7 @@ namespace API.Base.Logging.Filters
             if (!string.IsNullOrEmpty(str))
             {
                 _logger.Log(LogLevel.Information,
-                    new AuditEntity
+                    new LogsAuditEntity
                     {
                         RequestBody = str,
                         Ip = context.HttpContext.Connection.RemoteIpAddress.ToString(),

@@ -96,8 +96,7 @@ namespace API.Base.Web.Common.Data
         }
 
 #pragma warning disable 1998
-        public override async Task<IEnumerable<SettingEntity>> GetAll(bool includeDeleted = false,
-            bool dontFetch = false)
+        public override async Task<IEnumerable<SettingEntity>> GetAll(bool dontFetch = false)
 #pragma warning restore 1998
         {
             lock (CacheLock)
@@ -105,14 +104,6 @@ namespace API.Base.Web.Common.Data
                 if (_entitiesCache == null)
                 {
                     _entitiesCache = Queryable.Include(setting => setting.File).ToListAsync().Result;
-                }
-
-                foreach (var settingEntity in _entitiesCache)
-                {
-                    if (settingEntity.File != null && settingEntity.File.Deleted)
-                    {
-                        settingEntity.File = null;
-                    }
                 }
 
                 return _entitiesCache;

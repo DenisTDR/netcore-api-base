@@ -7,6 +7,7 @@ using API.Base.Web.Base.Attributes;
 using API.Base.Web.Base.Attributes.Base;
 using API.Base.Web.Base.Attributes.GenericForm;
 using API.Base.Web.Base.Auth.Models.HttpTransport;
+using API.Base.Web.Base.Data;
 using API.Base.Web.Base.Extensions;
 using API.Base.Web.Base.Models.ViewModels;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -48,38 +49,17 @@ namespace API.Base.Web.Base.Swagger.Filters
             PatchCustomFormats(propertyInfo, schema);
             PatchAutoSetLogic(propertyInfo, schema);
 
-            var dataTypeAttributes = propertyInfo.GetCustomAttributes<DataTypeAttribute>();
-            var validators = new List<ValidationModel>();
-            foreach (var dataTypeAttribute in dataTypeAttributes)
-            {
-                switch (dataTypeAttribute.DataType)
-                {
-                    case DataType.EmailAddress:
-                        schema.Extensions["format"] = "email";
-                        validators.Add(new ValidationModel("email", null, "invalid_email"));
-                        break;
-                    case DataType.PhoneNumber:
-                        schema.Extensions["format"] = "tel";
-                        validators.Add(
-                            new ValidationModel("pattern", "^\\+?(?:[0-9]\\s*){8,}$", "invalid_phone_number"));
-                        break;
-                    case DataType.Date:
-                        schema.Extensions["customFormat"] = "datePicker";
-                        break;
-                    case DataType.MultilineText:
-                        schema.Extensions["customFormat"] = "textarea";
-                        break;
-                }
-            }
+            PatchDataTypeAttribute(propertyInfo, schema);
 
-            var basicAttributes = propertyInfo.GetCustomAttributes<BasicAttribute>();
+            var basicAttributes = declaringType.GetCustomAttributes<BasicAttribute>()
+                .Concat(propertyInfo.GetCustomAttributes<BasicAttribute>());
+
             foreach (var basicAttribute in basicAttributes)
             {
                 schema.Extensions[basicAttribute.Name] = basicAttribute.Value;
             }
 
             PatchDefaultTexts(propertyInfo, schema);
-            PatchValidation(propertyInfo, schema, validators);
         }
 
         private void PatchValidation(PropertyInfo propertyInfo, Schema schema, List<ValidationModel> validators)
@@ -110,16 +90,54 @@ namespace API.Base.Web.Base.Swagger.Filters
             schema.Extensions["validators"] = validators;
         }
 
+        private void PatchDataTypeAttribute(PropertyInfo propertyInfo, Schema schema)
+        {
+            var dataTypeAttributes = propertyInfo.GetCustomAttributes<DataTypeAttribute>();
+            var validators = new List<ValidationModel>();
+            foreach (var dataTypeAttribute in dataTypeAttributes)
+            {
+                switch (dataTypeAttribute.DataType)
+                {
+                    case DataType.EmailAddress:
+                        schema.Extensions["format"] = "email";
+                        validators.Add(new ValidationModel("email", null, "invalid_email"));
+                        break;
+                    case DataType.PhoneNumber:
+                        schema.Extensions["format"] = "tel";
+                        validators.Add(
+                            new ValidationModel("pattern", "^\\+?(?:[0-9]\\s*){8,}$", "invalid_phone_number"));
+                        break;
+                    case DataType.Date:
+                        schema.Extensions["customFormat"] = "datePicker";
+                        break;
+                    case DataType.MultilineText:
+                        schema.Extensions["customFormat"] = "textarea";
+                        break;
+                    case DataType.Html:
+                        schema.Extensions["customFormat"] = "textarea";
+                        break;
+                }
+            }
+
+            PatchValidation(propertyInfo, schema, validators);
+        }
+
         private void PatchCustomFormats(PropertyInfo propertyInfo, Schema schema)
         {
             PatchEnumProperties(propertyInfo, schema);
-            if (propertyInfo.PropertyType == typeof(int))
+            if (propertyInfo.PropertyType == typeof(int) || propertyInfo.PropertyType == typeof(float))
             {
                 schema.Extensions["customFormat"] = "number";
             }
             else if (propertyInfo.PropertyType == typeof(bool))
             {
                 schema.Extensions["customFormat"] = "checkbox";
+            }
+            else if (typeof(IFile).IsAssignableFrom(propertyInfo.PropertyType))
+            {
+                schema.Extensions["customFormat"] = "file";
+                schema.Extensions["file"] = new
+                    {uploadUrl = "/api/File/Upload", type = "customType", itemAlias = "files"};
             }
         }
 

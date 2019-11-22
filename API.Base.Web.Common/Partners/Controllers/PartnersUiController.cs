@@ -1,9 +1,7 @@
-using System.Threading.Tasks;
 using API.Base.Web.Base.Models;
 using API.Base.Web.Common.Controllers.Ui.Nv;
 using API.Base.Web.Common.Partners.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,8 +21,8 @@ namespace API.Base.Web.Common.Partners.Controllers
 
         protected override void SetTopLinks()
         {
-            TopLinks.Add(new ControllerActionLinkModel("Partner Tiers", controller: nameof(PartnerTiersUiController)));
-            TopLinks.Add(new ControllerActionLinkModel("Partner Types", controller: nameof(PartnerTypesUiController)));
+            TopLinks.Add(new AdminDashboardLink("Partner Tiers", typeof(PartnerTiersUiController)));
+            TopLinks.Add(new AdminDashboardLink("Partner Types", typeof(PartnerTypesUiController)));
         }
     }
 }

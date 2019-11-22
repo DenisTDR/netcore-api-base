@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using API.Base.Web.Base.Controllers.Api;
+using API.Base.Web.Base.Controllers.Ui;
 using API.Base.Web.Base.Extensions;
 using API.Base.Web.Base.Misc;
 using API.Base.Web.Base.Models;
@@ -15,13 +16,16 @@ namespace API.Base.Web.Base.ApiBuilder
 {
     public class EntityViewModelApiBuilderHelper
     {
-        public IEnumerable<EntityTypePairConfiguration> ProcessEntities(List<ApiSpecifications> apiSpecificationsList)
+        public IEnumerable<EntityTypeStackConfiguration> ProcessEntities(List<ApiSpecifications> apiSpecificationsList)
         {
-            var configs = new List<EntityTypePairConfiguration>();
+            var configs = new List<EntityTypeStackConfiguration>();
             var entityTypes = new List<Type>();
             var entityTypeConfigurationTypes = new List<Type>();
             var entityViewModelMapTypes = new List<Type>();
             var viewModelTypes = new List<Type>();
+
+            var disabledStacks = apiSpecificationsList.SelectMany(s => s.DisableEntityStacks() ?? new List<Type>())
+                .ToList();
 
             foreach (var apiSpecifications in apiSpecificationsList)
             {
@@ -50,7 +54,14 @@ namespace API.Base.Web.Base.ApiBuilder
 
             foreach (var entityType in entityTypes)
             {
-                var config = new EntityTypePairConfiguration(entityType);
+                var config = new EntityTypeStackConfiguration(entityType)
+                {
+                    Disabled = disabledStacks.Contains(entityType),
+                    UiControllerType = GetGenericTypeForAssemblyWithTypeArgument(typeof(GenericUiController<>),
+                        entityType.Assembly,
+                        entityType)
+                };
+
                 configs.Add(config);
 
                 if (!entityType.GetCustomAttributes<NotStoredAttribute>().Any())
@@ -91,11 +102,19 @@ namespace API.Base.Web.Base.ApiBuilder
 
 //                    Console.WriteLine("added missing viewmodel by name matching: " + nameMatchingViewModelType.Name);
                 }
+                
+                if (config.ViewModelPairTypes.Count > 0)
+                {
+                    config.ApiControllerType =
+                        GetGenericTypeForAssemblyWithTypeArgument(typeof(GenericReadOnlyController<,>),
+                            config.EntityType.Assembly, config.EntityType, config.ViewModelPairTypes.First().ViewModelType);
+                }
             }
 
             FixEntityPairConfigurations(configs);
 
-            Console.WriteLine("Found " + configs.Count + " entities.");
+            Console.WriteLine("Found " + configs.Count(config => !config.Disabled) + " entities. (and " +
+                              configs.Count(config => config.Disabled) + " disabled)");
 
 //            Log(configs);
 //            Process.GetCurrentProcess().Kill();
@@ -103,7 +122,7 @@ namespace API.Base.Web.Base.ApiBuilder
         }
 
         private void CheckIfViewModelHasMoreBindingsThan(Type viewModelType, Type entityType,
-            List<EntityTypePairConfiguration> configs)
+            List<EntityTypeStackConfiguration> configs)
         {
             var remainingAttrs = viewModelType.GetCustomAttributes<AutoMapsWithAttribute>()
                 .Where(a => a.TargetType != entityType).ToList();
@@ -117,7 +136,7 @@ namespace API.Base.Web.Base.ApiBuilder
             }
         }
 
-        private void FixEntityPairConfigurations(IList<EntityTypePairConfiguration> configs)
+        private void FixEntityPairConfigurations(IList<EntityTypeStackConfiguration> configs)
         {
             foreach (var config in configs)
             {
@@ -134,7 +153,15 @@ namespace API.Base.Web.Base.ApiBuilder
             }
         }
 
-        private void Log(IList<EntityTypePairConfiguration> configs)
+        private Type GetGenericTypeForAssemblyWithTypeArgument(Type superType, Assembly assembly,
+            params Type[] argumentTypes)
+        {
+            var targetSuperType = superType.MakeGenericType(argumentTypes);
+            var controllersMaybe = assembly.GetTypes().Where(type => targetSuperType.IsAssignableFrom(type));
+            return controllersMaybe.FirstOrDefault();
+        }
+
+        private void Log(IList<EntityTypeStackConfiguration> configs)
         {
             var c = 0;
 

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,12 +5,9 @@ using API.Base.Web.Base.Database.DataLayer;
 using API.Base.Web.Base.Database.Repository;
 using API.Base.Web.Base.Database.Repository.Helpers;
 using API.Base.Web.Base.Models.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace API.Base.Web.Base.Controllers.Ui
 {

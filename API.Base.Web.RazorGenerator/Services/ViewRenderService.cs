@@ -17,6 +17,7 @@ namespace API.Base.Web.RazorGenerator.Services
     public interface IViewRenderService
     {
         Task<string> RenderToStringAsync(string viewName, object model);
+        Task<string> RenderToStringAsync(string viewName, object model, ActionContext actionContext);
     }
 
     public class ViewRenderService : IViewRenderService
@@ -46,12 +47,17 @@ namespace API.Base.Web.RazorGenerator.Services
 
             return viewResult.View;
         }
-        
-        public async Task<string> RenderToStringAsync(string viewName, object model)
+
+        public Task<string> RenderToStringAsync(string viewName, object model)
         {
             var httpContext = new DefaultHttpContext {RequestServices = _serviceProvider};
             var actionContext = new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
 
+            return RenderToStringAsync(viewName, model, actionContext);
+        }
+
+        public async Task<string> RenderToStringAsync(string viewName, object model, ActionContext actionContext)
+        {
             using (var sw = new StringWriter())
             {
                 var view = GetView(actionContext, viewName);

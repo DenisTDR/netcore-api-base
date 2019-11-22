@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
+using API.Base.Web.Base.ApiBuilder.AppFeatureProvider;
 using API.Base.Web.Base.Auth.Models.Entities;
 using API.Base.Web.Base.Database;
 using API.Base.Web.Base.Extensions;
 using API.Base.Web.Base.Helpers;
 using API.Base.Web.Base.Models;
-using API.Base.Web.Base.Models.Entities;
 using API.Base.Web.Base.Models.EntityMaps;
-using API.Base.Web.Base.Models.ViewModels;
 using API.Base.Web.Base.Swagger;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
@@ -29,8 +27,8 @@ namespace API.Base.Web.Base.ApiBuilder
 
         private readonly Assembly _mainAssembly;
 
-        private readonly List<EntityTypePairConfiguration> _typePairConfigurations =
-            new List<EntityTypePairConfiguration>();
+        private readonly List<EntityTypeStackConfiguration> _typeStackConfigurations =
+            new List<EntityTypeStackConfiguration>();
 
         private readonly List<ApiSpecifications> _specifications = new List<ApiSpecifications>();
         private readonly IConfiguration _configuration;
@@ -49,29 +47,35 @@ namespace API.Base.Web.Base.ApiBuilder
                 this.AddSpecifications<WebBaseApiSpecifications>();
             }
 
-            if (_addMvcServices)
+            _processEntities();
+            var mvcBuilder = services.AddMvc(mvcOptions =>
             {
-                var mvcBuilder = services.AddMvc(mvcOptions =>
-                {
-                    foreach (var apiSpecifications in _specifications)
-                    {
-                        apiSpecifications.ConfigMvc(mvcOptions);
-                    }
-                }).AddJsonOptions(mvcJsonOptions =>
-                {
-                    mvcJsonOptions.SerializerSettings.Converters.Add(
-                        new Newtonsoft.Json.Converters.StringEnumConverter());
-                    mvcJsonOptions.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
-                    mvcJsonOptions.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                    mvcJsonOptions.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
-                });
                 foreach (var apiSpecifications in _specifications)
                 {
-                    mvcBuilder = apiSpecifications.MvcChain(mvcBuilder);
+                    apiSpecifications.ConfigMvc(mvcOptions);
                 }
+            }).AddJsonOptions(mvcJsonOptions =>
+            {
+                mvcJsonOptions.SerializerSettings.Converters.Add(
+                    new Newtonsoft.Json.Converters.StringEnumConverter());
+                mvcJsonOptions.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                mvcJsonOptions.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                mvcJsonOptions.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
+            });
+            foreach (var apiSpecifications in _specifications)
+            {
+                mvcBuilder = apiSpecifications.MvcChain(mvcBuilder);
             }
 
-            _processEntities();
+            mvcBuilder.ConfigureApplicationPartManager(apm =>
+                apm.FeatureProviders.Add(new DisabledControllersFeatureProvider(_typeStackConfigurations)));
+
+            var seedingApiSpec = _specifications.LastOrDefault(spec => spec.AddDbSeederAction != null);
+            if (seedingApiSpec != null)
+            {
+                _addDbSeeder = seedingApiSpec.AddDbSeederAction;
+            }
+
             _registerAutoMapperPairs();
             _registerDbContext(services);
             if (_useSwagger)
@@ -94,30 +98,11 @@ namespace API.Base.Web.Base.ApiBuilder
                 apiSpecifications.ConfigureServices(services);
             }
 
-            services.AddOptions<AdminDashboardConfig>().Configure(config =>
-            {
-                foreach (var apiSpec in _specifications)
-                {
-                    void AddAdSection(AdminDashboardSection section)
-                    {
-                        var existingSection = config.Sections.FirstOrDefault(s => s.Name == section.Name);
-                        if (existingSection != null)
-                        {
-                            existingSection.Links.AddRange(section.Links);
-                        }
-                        else
-                        {
-                            config.Sections.Add(section);
-                        }
-                    }
+            services.AddOptions<AdminDashboardConfig>().Configure(_processAdminDashboardSections);
 
-                    apiSpec.RegisterAdminDashboardSections().ForEach(AddAdSection);
-                    var tmp1 = apiSpec.RegisterAdminDashboardSection();
-                    if (tmp1 != null)
-                    {
-                        AddAdSection(tmp1);
-                    }
-                }
+            services.AddOptions<List<EntityTypeStackConfiguration>>().Configure(c =>
+            {
+                c.AddRange(_typeStackConfigurations);
             });
 
             return this;
@@ -241,7 +226,7 @@ namespace API.Base.Web.Base.ApiBuilder
                 $"port={EnvVarManager.GetOrThrow("DB_PORT")};" +
                 $"database={EnvVarManager.GetOrThrow("DB_DATABASE")};" +
                 $"uid={EnvVarManager.GetOrThrow("DB_USER")};" +
-                $"password={EnvVarManager.GetOrThrow("DB_PASSWORD")}";
+                $"password={EnvVarManager.Get("DB_PASSWORD")}";
 
 
             _connectionString = connectionString + (connectionString.EndsWith(";") ? "" : ";") +
@@ -271,32 +256,55 @@ namespace API.Base.Web.Base.ApiBuilder
 
         public ApiBuilder AddSeeder<T>() where T : class, IDataSeeder
         {
-            _addDbSeeder = services =>
-            {
-                services.AddTransient<IDataSeeder, T>();
-            };
-            return this;
-        }
-
-        private bool _addMvcServices = true;
-
-        public ApiBuilder SkipAddingMvcServices()
-        {
-            _addMvcServices = false;
+            _addDbSeeder = services => { services.AddTransient<IDataSeeder, T>(); };
             return this;
         }
 
         private void _processEntities()
         {
-            _typePairConfigurations.AddRange(new EntityViewModelApiBuilderHelper().ProcessEntities(_specifications));
+            _typeStackConfigurations.AddRange(new EntityViewModelApiBuilderHelper().ProcessEntities(_specifications));
         }
 
+        private void _processAdminDashboardSections(AdminDashboardConfig config)
+        {
+            foreach (var apiSpec in _specifications)
+            {
+                void AddAdSection(AdminDashboardSection section)
+                {
+                    var existingSection = config.Sections.FirstOrDefault(s => s.Name == section.Name);
+                    if (existingSection != null)
+                    {
+                        existingSection.Links.AddRange(section.Links);
+                    }
+                    else
+                    {
+                        config.Sections.Add(section);
+                    }
+                }
+
+                apiSpec.RegisterAdminDashboardSections().ForEach(AddAdSection);
+                var tmp1 = apiSpec.RegisterAdminDashboardSection();
+                if (tmp1 != null)
+                {
+                    AddAdSection(tmp1);
+                }
+            }
+
+            foreach (var section in config.Sections)
+            {
+                section.Links.RemoveAll(link =>
+                    link.IsAspUrl &&
+                    _typeStackConfigurations.Any(tsc => tsc.Disabled && tsc.UiControllerType == link.Controller));
+            }
+
+            config.Sections.RemoveAll(section => section.Links.Count == 0);
+        }
 
         private void _registerAutoMapperPairs()
         {
             Mapper.Initialize(config =>
             {
-                foreach (var typeConfig in _typePairConfigurations)
+                foreach (var typeConfig in _typeStackConfigurations)
                 {
                     foreach (var viewModelMapPair in typeConfig.ViewModelPairTypes.Where(vmp =>
                         vmp.EntityViewModelMapType != null))
@@ -321,7 +329,7 @@ namespace API.Base.Web.Base.ApiBuilder
 
         private void _registerEntityTypes(ModelBuilder modelBuilder)
         {
-            foreach (var entityTypePairConfiguration in _typePairConfigurations.Where(config => config.IsStored))
+            foreach (var entityTypePairConfiguration in _typeStackConfigurations.Where(config => config.IsStored))
             {
                 modelBuilder.AddConfigurationType(entityTypePairConfiguration.EntityTypeConfigurationType);
             }

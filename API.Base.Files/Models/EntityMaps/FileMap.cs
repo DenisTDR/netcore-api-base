@@ -10,13 +10,15 @@ namespace API.Base.Files.Models.EntityMaps
     {
         public override void ConfigureEntityToViewModelMapper(IMapperConfigurationExpression configurationExpression)
         {
-            configurationExpression.CreateMap<FileEntity, FileViewModel>().AfterMap((e, vm) =>
+            base.ConfigureEntityToViewModelMapper(configurationExpression);
+            EntityToViewModelExpression.AfterMap((e, vm) =>
             {
                 if (string.IsNullOrEmpty(e.SubDirectory) || string.IsNullOrEmpty(e.Name) ||
                     string.IsNullOrEmpty(e.Extension))
                 {
                     return;
                 }
+
                 vm.Link = Path.Combine("/content", e.SubDirectory, e.Name + "." + e.Extension).Replace("\\", "/");
             });
         }

@@ -16,13 +16,15 @@ namespace API.Base.Web.Base.Models.EntityMaps
 
             builder.HasIndex(e => e.Id);
             builder.HasKey(e => e.Id);
-            builder.HasIndex(e => e.Selector);
-            builder.Property(e => e.Selector)
-                .HasMaxLength(32);
 
             if (typeof(IOrderedEntity).IsAssignableFrom(typeof(TEntity)))
             {
                 builder.HasIndex(e => ((IOrderedEntity) e).OrderIndex);
+            }
+            
+            if (typeof(ISlugableEntity).IsAssignableFrom(typeof(TEntity)))
+            {
+                builder.HasIndex(e => ((ISlugableEntity) e).Slug);
             }
         }
 

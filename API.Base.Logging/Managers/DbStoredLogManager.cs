@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,21 +10,21 @@ using Newtonsoft.Json;
 
 namespace API.Base.Logging.Managers
 {
-    internal class AuditManager : IAuditManager, IDisposable
+    internal class DbStoredLogManager<T> where T : DbStoredLog
     {
-        private readonly IRepository<AuditEntity> _repo;
+        private readonly IRepository<T> _repo;
 
-        private readonly ConcurrentQueue<EntityPatchBag<AuditEntity>> _auditQueue =
-            new ConcurrentQueue<EntityPatchBag<AuditEntity>>();
+        private readonly ConcurrentQueue<EntityPatchBag<T>> _logQueue =
+            new ConcurrentQueue<EntityPatchBag<T>>();
 
         private Thread _workerThread;
 
         private SemaphoreSlim _semaphore;
 
-        internal AuditManager(IDataLayer dataLayer)
+        internal DbStoredLogManager(IDataLayer dataLayer)
         {
 //            Console.WriteLine("AuditManager ctor");
-            _repo = dataLayer.Repo<AuditEntity>();
+            _repo = dataLayer.Repo<T>();
 
             _semaphore = new SemaphoreSlim(0);
             try
@@ -34,20 +34,20 @@ namespace API.Base.Logging.Managers
             }
             catch (Exception exc)
             {
-                Console.WriteLine($"AuditManager.constructor Exception: {exc.Message} ");
+                Console.WriteLine($"{GetType().Name}.constructor Exception: {exc.Message} ");
                 throw;
             }
         }
 
-        public void Store(AuditEntity audit)
+        public void Store(T audit)
         {
-            _auditQueue.Enqueue(new EntityPatchBag<AuditEntity> {Model = audit});
+            _logQueue.Enqueue(new EntityPatchBag<T> {Model = audit});
             _semaphore.Release();
         }
 
-        public void UpdateAuditLog(EntityPatchBag<AuditEntity> epbae)
+        public void UpdateStoredLog(EntityPatchBag<T> epbae)
         {
-            _auditQueue.Enqueue(epbae);
+            _logQueue.Enqueue(epbae);
             _semaphore.Release();
         }
 
@@ -59,22 +59,23 @@ namespace API.Base.Logging.Managers
             _working = true;
             while (_working)
             {
-                if (!_auditQueue.IsEmpty)
+                if (!_logQueue.IsEmpty)
                 {
-                    while (!_auditQueue.IsEmpty)
+                    while (!_logQueue.IsEmpty)
                     {
-                        if (_auditQueue.TryDequeue(out var epb))
+                        if (_logQueue.TryDequeue(out var epb))
                         {
                             try
                             {
                                 if (!string.IsNullOrEmpty(epb.Id))
                                 {
 //                                    Console.WriteLine("patching audit");
-                                    var existingAudit =
-                                        (await _repo.FindOne(audit => audit.TraceIdentifier == epb.Id));
-                                    if (existingAudit != null)
+                                    var existingLog =
+                                        await _repo.FindOne(audit =>
+                                            audit.TraceIdentifier == epb.Id || audit.Id == epb.Id);
+                                    if (existingLog != null)
                                     {
-                                        epb.Id = existingAudit.Selector;
+                                        epb.Id = existingLog.Id;
                                         await _repo.Patch(epb);
                                     }
                                 }
@@ -86,7 +87,7 @@ namespace API.Base.Logging.Managers
                             }
                             catch (Exception exc)
                             {
-                                Console.WriteLine("AuditManager Exception:" + exc.Message);
+                                Console.WriteLine($"{GetType().Name} Exception:" + exc.Message);
                                 Console.WriteLine(JsonConvert.SerializeObject(epb));
                             }
                         }
@@ -98,7 +99,7 @@ namespace API.Base.Logging.Managers
 //                Console.WriteLine("got green semaphore");
             }
 
-            Console.WriteLine("Audit worker stopped");
+            Console.WriteLine($"{GetType().Name} worker stopped");
         }
 
         public void Dispose()

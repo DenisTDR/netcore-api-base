@@ -21,6 +21,8 @@ namespace API.Base.Web.Common.Controllers.Ui.Nv
         protected virtual IUiViewGeneratorService UiViewGeneratorService =>
             ServiceProvider.GetService<IUiViewGeneratorService>();
 
+        protected bool UseInheritedProperties { get; set; }
+
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
@@ -42,7 +44,7 @@ namespace API.Base.Web.Common.Controllers.Ui.Nv
             FormProperties = new List<PropertyInfo>();
             SetFormProperties();
 
-            TopLinks = new List<ControllerActionLinkModel>();
+            TopLinks = new List<AdminDashboardLink>();
             SetTopLinks();
         }
 
@@ -57,9 +59,9 @@ namespace API.Base.Web.Common.Controllers.Ui.Nv
 
         protected virtual void SetListColumns()
         {
-            ListColumns =
-                typeof(TE).GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
-                    .ToList();
+            var flags = BindingFlags.Public | BindingFlags.Instance |
+                        (UseInheritedProperties ? BindingFlags.Default : BindingFlags.DeclaredOnly);
+            ListColumns = typeof(TE).GetProperties(flags).ToList();
             if (typeof(IOrderedEntity).IsAssignableFrom(typeof(TE)))
             {
                 ListColumns.Remove(typeof(TE).GetProperty(nameof(IOrderedEntity.OrderIndex)));
@@ -81,10 +83,11 @@ namespace API.Base.Web.Common.Controllers.Ui.Nv
 
         protected virtual void SetFormProperties()
         {
-            FormProperties =
-                typeof(TE).GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
-                    .Where(p => p.CustomAttributes.All(a => a.AttributeType != typeof(IsReadOnlyAttribute)))
-                    .ToList();
+            var flags = BindingFlags.Public | BindingFlags.Instance |
+                        (UseInheritedProperties ? BindingFlags.Default : BindingFlags.DeclaredOnly);
+
+            FormProperties = typeof(TE).GetProperties(flags)
+                .Where(p => p.CustomAttributes.All(a => a.AttributeType != typeof(IsReadOnlyAttribute))).ToList();
             if (typeof(IOrderedEntity).IsAssignableFrom(typeof(TE)))
             {
                 FormProperties.Remove(typeof(TE).GetProperty(nameof(IOrderedEntity.OrderIndex)));
@@ -96,7 +99,7 @@ namespace API.Base.Web.Common.Controllers.Ui.Nv
             DisplayProperties = typeof(TE).GetProperties().ToList();
         }
 
-        public IList<ControllerActionLinkModel> TopLinks { get; set; }
+        public IList<AdminDashboardLink> TopLinks { get; set; }
         public IList<string> ListItemActions { get; set; }
         public IList<PropertyInfo> ListColumns { get; set; }
         public IList<PropertyInfo> DisplayProperties { get; set; }

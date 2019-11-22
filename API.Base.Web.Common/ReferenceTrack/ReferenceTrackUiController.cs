@@ -12,7 +12,7 @@ namespace API.Base.Web.Common.ReferenceTrack
     {
         public override async Task<IActionResult> Index()
         {
-            var all = await Repo.DbSet.Where(s => !s.Deleted).OrderBy(s => s.Created).ToListAsync();
+            var all = await Repo.DbSet.OrderBy(s => s.Created).ToListAsync();
             foreach (var rt in all)
             {
                 rt.Code = GetFullName(rt.Code);

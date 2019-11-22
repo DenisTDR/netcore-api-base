@@ -1,15 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading.Tasks;
 using API.Base.Web.Base.Extensions;
 using API.Base.Web.Base.Models;
 using API.Base.Web.Common.Controllers.Ui.Nv;
 using API.Base.Web.Common.Partners.Models.Entities;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace API.Base.Web.Common.Partners.Controllers
 {
@@ -43,8 +39,8 @@ namespace API.Base.Web.Common.Partners.Controllers
 
         protected override void SetTopLinks()
         {
-            TopLinks.Add(new ControllerActionLinkModel("Partners", controller: nameof(PartnersUiController)));
-            TopLinks.Add(new ControllerActionLinkModel("Partner Types", controller: nameof(PartnerTypesUiController)));
+            TopLinks.Add(new AdminDashboardLink("Partners", typeof(PartnersUiController)));
+            TopLinks.Add(new AdminDashboardLink("Partner Types", typeof(PartnerTypesUiController)));
         }
     }
 }

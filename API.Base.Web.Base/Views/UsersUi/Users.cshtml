@@ -31,9 +31,6 @@
             Roles
         </th>
         <th>
-            Deleted
-        </th>
-        <th>
             Food code
         </th>
         <th>
@@ -65,9 +62,6 @@
                 @string.Join(" ", roles)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Deleted)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Code)
             </td>
             <td>
@@ -84,14 +78,11 @@
                        asp-route-id="@item.Id">
                         <i class="fa fa-pencil" aria-hidden="true"></i>
                     </a>
-                    @if (!item.Deleted)
-                    {
-                        <a class="btn btn-outline-primary"
-                           asp-action="Delete"
-                           asp-route-id="@item.Id">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
-                        </a>
-                    }
+                    <a class="btn btn-outline-primary"
+                       asp-action="Delete"
+                       asp-route-id="@item.Id">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </a>
                 </div>
                 <div id="collapseRoles-@item.Id" class="collapse card card-body bg-light">
 

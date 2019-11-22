@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using API.Base.Files.Controllers;
 using API.Base.Web.Base.ApiBuilder;
@@ -44,10 +43,10 @@ namespace API.Base.Web.Common
                     Name = "Common",
                     Links = new List<AdminDashboardLink>
                     {
-                        new AdminDashboardLink("Settings", controller: nameof(SettingUiController)),
-                        new AdminDashboardLink("Templates", controller: nameof(TemplateUiController)),
-                        new AdminDashboardLink("Translations", controller: nameof(TranslationsUiController)),
-                        new AdminDashboardLink("Files", controller: nameof(FileUiController))
+                        new AdminDashboardLink("Settings", typeof(SettingUiController)),
+                        new AdminDashboardLink("Templates", typeof(TemplateUiController)),
+                        new AdminDashboardLink("Translations", typeof(TranslationsUiController)),
+                        new AdminDashboardLink("Files", typeof(FileUiController))
                     }
                 },
                 new AdminDashboardSection
@@ -55,7 +54,7 @@ namespace API.Base.Web.Common
                     Name = "Content",
                     Links = new List<AdminDashboardLink>
                     {
-                        new AdminDashboardLink("Partners", controller: nameof(PartnersUiController))
+                        new AdminDashboardLink("Partners", typeof(PartnersUiController))
                     }
                 },
 
@@ -64,8 +63,8 @@ namespace API.Base.Web.Common
                     Name = "Content",
                     Links = new List<AdminDashboardLink>
                     {
-                        new AdminDashboardLink("Tracking", controller: nameof(ReferenceTrackUiController)),
-                        new AdminDashboardLink("Subscribers", controller: nameof(SubscriberUiController)),
+                        new AdminDashboardLink("Tracking", typeof(ReferenceTrackUiController)),
+                        new AdminDashboardLink("Subscribers", typeof(SubscriberUiController)),
                     }
                 },
                 new AdminDashboardSection
@@ -73,8 +72,8 @@ namespace API.Base.Web.Common
                     Name = "Content",
                     Links = new List<AdminDashboardLink>
                     {
-                        new AdminDashboardLink("FAQs", controller: nameof(FaqUiController)),
-                        new AdminDashboardLink("OG Metadata", controller: nameof(OgMetadataUiController)),
+                        new AdminDashboardLink("FAQs", typeof(FaqUiController)),
+                        new AdminDashboardLink("OG Metadata", typeof(OgMetadataUiController)),
                     }
                 },
             };

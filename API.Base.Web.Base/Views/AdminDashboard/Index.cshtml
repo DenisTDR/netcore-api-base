@@ -1,5 +1,4 @@
 @using Microsoft.Extensions.Options
-@using Newtonsoft.Json
 @using API.Base.Web.Base.Models
 
 @inject IOptions<AdminDashboardConfig> config;
@@ -25,7 +24,7 @@
                     {
                         if (link.IsAspUrl)
                         {
-                            <a class="btn btn-outline-dark mb-2" asp-controller="@link.Controller" asp-action="@link.Action">@link.Text</a>
+                            <a class="btn btn-outline-dark mb-2" asp-controller="@link.ControllerName" asp-action="@link.ActionName">@link.Text</a>
                         }
                         else
                         {

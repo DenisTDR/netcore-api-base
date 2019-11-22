@@ -1,46 +1,47 @@
 using System.Threading.Tasks;
+using API.Base.Web.Base.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace API.Base.Web.Common.Extensions
+namespace API.Base.Web.Base.Extensions
 {
-    public static class AlertExtensions
+    public static class ActionResultExtensionsForStatusMessages
     {
         public static IActionResult WithSuccess(this IActionResult result, string title, string body)
         {
-            return Alert(result, "success", title, body);
+            return WithStatusMessage(result, "success", title, body);
         }
 
         public static IActionResult WithInfo(this IActionResult result, string title, string body)
         {
-            return Alert(result, "info", title, body);
+            return WithStatusMessage(result, "info", title, body);
         }
 
         public static IActionResult WithWarning(this IActionResult result, string title, string body)
         {
-            return Alert(result, "warning", title, body);
+            return WithStatusMessage(result, "warning", title, body);
         }
 
         public static IActionResult WithDanger(this IActionResult result, string title, string body)
         {
-            return Alert(result, "danger", title, body);
+            return WithStatusMessage(result, "danger", title, body);
         }
-        
-        private static IActionResult Alert(IActionResult result, string type, string title, string body)
+
+        public static IActionResult WithStatusMessage(IActionResult result, string type, string title, string body)
         {
-            return new AlertDecoratorResult(result, type, title, body);
+            return new StatusMessageDecoratorResult(result, type, title, body);
         }
     }
-    
-    public class AlertDecoratorResult : IActionResult
+
+    public class StatusMessageDecoratorResult : IActionResult
     {
         public IActionResult Result { get; }
         public string Type { get; }
         public string Title { get; }
         public string Body { get; }
 
-        public AlertDecoratorResult(IActionResult result, string type, string title, string body)
+        public StatusMessageDecoratorResult(IActionResult result, string type, string title, string body)
         {
             Result = result;
             Type = type;
@@ -53,9 +54,7 @@ namespace API.Base.Web.Common.Extensions
             var factory = context.HttpContext.RequestServices.GetService<ITempDataDictionaryFactory>();
 
             var tempData = factory.GetTempData(context.HttpContext);
-            tempData["_alert.type"] = Type;
-            tempData["_alert.title"] = Title;
-            tempData["_alert.body"] = Body;
+            tempData["_statusMessage"] = new StatusMessageWithType(Title, Body, Type);
 
             await Result.ExecuteResultAsync(context);
         }

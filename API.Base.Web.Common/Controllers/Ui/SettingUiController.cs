@@ -28,7 +28,7 @@ namespace API.Base.Web.Common.Controllers.Ui
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
-            Repo.RebuildQueryable(dbSet => dbSet.Where(e => !e.Deleted).Include(e => e.File));
+            Repo.RebuildQueryable(dbSet => dbSet.Include(e => e.File));
         }
 
         public override async Task<IActionResult> Index()
@@ -52,21 +52,14 @@ namespace API.Base.Web.Common.Controllers.Ui
             var setting = await base.GetOne(id);
             if (setting.File != null)
             {
-                if (setting.File.Deleted)
-                {
-                    setting.File = null;
-                }
-                else
-                {
-                    setting.File.Link = Mapper.Map<FileViewModel>(setting.File).Link;
-                }
+                setting.File.Link = Mapper.Map<FileViewModel>(setting.File).Link;
             }
 
             return setting;
         }
 
         public override Task<IActionResult> Create(SettingEntity entity)
-        { 
+        {
             if (entity?.Type == SettingType.File)
             {
                 if (!string.IsNullOrEmpty(entity?.Value))

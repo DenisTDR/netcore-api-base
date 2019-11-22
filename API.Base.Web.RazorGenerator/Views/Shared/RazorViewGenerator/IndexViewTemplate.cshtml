@@ -1,3 +1,4 @@
+@using API.Base.Web.Base.Auth.Models.Entities
 @using API.Base.Web.Base.Models.Entities
 @model API.Base.Web.RazorGenerator.Models.Index.IndexTemplateModel
 @{
@@ -17,14 +18,14 @@ ViewData["Title"] = "@Model.PageTitle";
         {
             foreach (var topLink in Model.TopLinks)
             {
-                @Html.Raw("<a asp-action=\"" + topLink.Action + "\" asp-controller=\"" + topLink.Controller + "\" class=\"mr-3\">" + topLink.Text + "</a>")
+                @Html.Raw("\t\t<a asp-action=\"" + topLink.ActionName + "\" asp-controller=\"" + topLink.ControllerName + "\" class=\"mr-3\">" + topLink.Text + "</a>\n")
             }
         }
     </div>
     <div class="col-12 col-md-6 d-flex justify-content-end pb-2">
         @if (Model.IsOrdered)
         {
-            @Html.Raw("<a class=\"btn btn-outline-primary mr-2\" asp-action=\"ReOrder\">ReOrder</a>")
+            @Html.Raw("\t\t<a class=\"btn btn-outline-primary mr-2\" asp-action=\"ReOrder\">ReOrder</a>\n")
         }
         @Html.Raw("<a class=\"btn btn-outline-primary\" asp-action=\"Create\">Create new " + Model.EntityName + "</a>")
     </div>
@@ -58,7 +59,7 @@ ViewData["Title"] = "@Model.PageTitle";
                     @Html.Raw("await Html.RenderBlindPartialAsync(\"_FileLinkPreview\", item." + column.Name + ", ViewData);")
                     @Html.Raw("}")
                 }
-                else if (column.PropertyType.IsSubclassOf(typeof(Entity)))
+                else if (column.PropertyType.IsSubclassOf(typeof(Entity)) || typeof(User).IsAssignableFrom(column.PropertyType))
                 {
                     <span>
                         @Html.Raw("@item." + column.Name + "")
@@ -75,7 +76,7 @@ ViewData["Title"] = "@Model.PageTitle";
             <td>
                 @foreach (var action in Model.Actions)
                 {
-                    @Html.Raw("<a asp-action=\"" + action + "\" asp-route-id=\"@item.Id\">" + action + "</a>")
+                    @Html.Raw("\t\t\t\t<a asp-action=\"" + action + "\" asp-route-id=\"@item.Id\">" + action + "</a>")
                     <span></span>
                 }
             </td>

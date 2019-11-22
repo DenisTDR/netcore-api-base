@@ -1,6 +1,5 @@
 
 @using API.Base.Web.Base.Extensions.HtmlHelpers
-@using API.Base.Web.Common.Partners.Models.Entities
 @inject API.Base.Web.Base.Database.DataLayer.IDataLayer DataLayer
 @model API.Base.Web.Common.Partners.Models.Entities.PartnerEntity
 
@@ -29,7 +28,7 @@ await Html.RenderBlindPartialAsync("~/Views/FileUi/_FileField.cshtml", Model?.Lo
             @Html.LabelFor(model => model.Type)
 
 <select asp-for="Type.Id" 
-asp-items="(await DataLayer.Repo<PartnerTypeEntity>().GetAll()).Select(p => new SelectListItem(p.ToString(), p.Id))" 
+asp-items="(await DataLayer.Repo<API.Base.Web.Common.Partners.Models.Entities.PartnerTypeEntity>().GetAll()).Select(p => new SelectListItem(p.ToString(), p.Id))" 
 class="form-control">
                 <option selected="selected" value="">Please select</option>
  </select>
@@ -39,7 +38,7 @@ class="form-control">
             @Html.LabelFor(model => model.Tier)
 
 <select asp-for="Tier.Id" 
-asp-items="(await DataLayer.Repo<PartnerTierEntity>().GetAll()).Select(p => new SelectListItem(p.ToString(), p.Id))" 
+asp-items="(await DataLayer.Repo<API.Base.Web.Common.Partners.Models.Entities.PartnerTierEntity>().GetAll()).Select(p => new SelectListItem(p.ToString(), p.Id))" 
 class="form-control">
                 <option selected="selected" value="">Please select</option>
  </select>

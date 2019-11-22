@@ -16,6 +16,9 @@
         <ProjectReference Include="..\API.Base.Web.RazorGenerator\API.Base.Web.RazorGenerator.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Views\AdminDashboard\Index.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\AdminDashboard\Index.cshtml" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Extensions" />
     </ItemGroup>
 </Project>

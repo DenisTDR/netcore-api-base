@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using API.Base.Web.Base.Database.Repository;
 using API.Base.Web.Base.Models.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Base.Web.Base.Database.DataLayer
 {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using API.Base.Files.Models.Entities;
+using API.Base.Web.Base.Auth.Models.Entities;
 using API.Base.Web.Base.Helpers;
 using API.Base.Web.Base.Misc;
 using API.Base.Web.Base.Models.Entities;
@@ -45,10 +46,30 @@ namespace API.Base.Web.RazorGenerator.Services
             ServiceProvider = serviceProvider;
         }
 
+        private string GetViewDirectory(IGenerableView generableView)
+        {
+            var dir = "Views/" + generableView.GetType().Name.Replace("Controller", "");
+            var assemblyShortName = generableView.GetType().Assembly.GetName().Name;
+            var viewsAndWwwPaths = EnvVarManager.Get("VIEWS_AND_WWW_PATHS");
+            if (!string.IsNullOrEmpty(viewsAndWwwPaths))
+            {
+                foreach (var projectDirectory in viewsAndWwwPaths.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    if (Path.GetFileName(projectDirectory) == assemblyShortName)
+                    {
+                        dir = Path.Combine(projectDirectory, dir);
+                    }
+                }
+            }
+
+            return dir;
+        }
+
         public async Task GenerateFor<TE>(string viewName, IGenerableView<TE> generableView) where TE : Entity
         {
-            Console.WriteLine("UiViewGeneratorService.GenerateFor: " + generableView.GetType().Name);
-            var viewDirectory = "Views/" + generableView.GetType().Name.Replace("Controller", "");
+//            Console.WriteLine("UiViewGeneratorService.GenerateFor: " + generableView.GetType().Name);
+
+            var viewDirectory = GetViewDirectory(generableView);
             Directory.CreateDirectory(viewDirectory);
             switch (viewName)
             {
@@ -132,13 +153,14 @@ namespace API.Base.Web.RazorGenerator.Services
             var vm = new FormTemplateModel(fullTypeName, entityName, entityName)
                 {Properties = generableFormView.FormProperties};
 
-            vm.ImportHtmlHelpers =
-                typeof(TE).GetProperties().Any(prop =>
-                    prop.PropertyType.IsSubclassOf(typeof(Entity)) || prop.GetCustomAttributes<DataTypeAttribute>().Any(
-                        attr =>
-                            attr != null && attr.DataType == DataType.Html));
+            vm.ImportHtmlHelpers = true;
+//                typeof(TE).GetProperties().Any(prop =>
+//                    prop.PropertyType.IsSubclassOf(typeof(Entity)) || prop.GetCustomAttributes<DataTypeAttribute>().Any(
+//                        attr =>
+//                            attr != null && attr.DataType == DataType.Html));
             vm.InjectDataLayer = typeof(TE).GetProperties().Any(prop =>
-                prop.PropertyType.IsSubclassOf(typeof(Entity)) && !prop.PropertyType.IsSubclassOf(typeof(FileEntity)));
+                typeof(IEntity).IsAssignableFrom(prop.PropertyType) &&
+                !prop.PropertyType.IsSubclassOf(typeof(FileEntity)));
 
             return await RenderGenericView(vm, viewName, viewDirectory);
         }
@@ -175,7 +197,8 @@ namespace API.Base.Web.RazorGenerator.Services
             var entityName = typeof(TE).Name.Replace("Entity", "");
             if (!typeof(IOrderedEntity).IsAssignableFrom(typeof(TE)))
             {
-                Console.WriteLine("Skipping ReOrder view generation. '" + fullTypeName + "' does not implement IOrderedEntity");
+                Console.WriteLine("Skipping 'ReOrder' view generation. '" + fullTypeName +
+                                  "' does not implement IOrderedEntity");
                 return null;
             }
 
@@ -183,15 +206,16 @@ namespace API.Base.Web.RazorGenerator.Services
 
             return await RenderGenericView(vm, viewName, viewDirectory);
         }
-        
+
         public async Task<string> RenderView<TE>(IGenerableIndexView<TE> generableIndexView,
             string viewDirectory = null,
             string viewName = null) where TE : Entity
         {
             var fullTypeName = typeof(TE).FullName;
             var entityName = typeof(TE).Name.Replace("Entity", "");
+            var controllerName = generableIndexView.GetType().Name.Replace("UiController", "");
 
-            var vm = new IndexTemplateModel(fullTypeName, entityName, entityName)
+            var vm = new IndexTemplateModel(fullTypeName, entityName, controllerName)
             {
                 Actions = generableIndexView.ListItemActions,
                 Columns = generableIndexView.ListColumns,

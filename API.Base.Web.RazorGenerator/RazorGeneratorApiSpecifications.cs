@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using API.Base.Web.Base.ApiBuilder;
 using API.Base.Web.Base.Extensions;
 using API.Base.Web.Base.Helpers;
+using API.Base.Web.Base.Misc;
 using API.Base.Web.RazorGenerator.Extensions;
 using API.Base.Web.RazorGenerator.Models;
 using API.Base.Web.RazorGenerator.Services;
@@ -30,7 +31,7 @@ namespace API.Base.Web.RazorGenerator
         {
             services.AddScoped<IViewRenderService, ViewRenderService>();
             services.AddScoped<IUiViewGeneratorService, UiViewGeneratorService>();
-            AddTmpViesDirectory(services);
+            AddTmpViewsDirectory(services);
 
             if (IsGeneratorActivated)
             {
@@ -54,13 +55,17 @@ namespace API.Base.Web.RazorGenerator
         private Type GetControllerType()
         {
             var controller = Configuration.GetValue<string>("controller");
+
+            if (string.IsNullOrEmpty(controller))
+            {
+                Utilis.DieWith("Missing --controller argument");
+            }
+
+            if (!controller.EndsWith("Controller")) controller += "Controller";
             var controllerType = GetTypeExtensions.GetType(controller);
             if (controllerType == null)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Couldn't locate controller type '" + controller + "'");
-                Console.ForegroundColor = ConsoleColor.White;
-                Process.GetCurrentProcess().Kill();
+                Utilis.DieWith("Couldn't locate controller type '" + controller + "'");
             }
 
             return controllerType;
@@ -68,19 +73,11 @@ namespace API.Base.Web.RazorGenerator
 
         private void GenerateViews(IServiceProvider serviceProvider)
         {
-            var controller = Configuration.GetValue<string>("controller");
-            if (string.IsNullOrEmpty(controller))
-            {
-                Console.WriteLine("Missing --controller argument");
-                throw new ArgumentNullException(nameof(controller));
-            }
-
             var viewNames = Configuration.GetValue<string>("view-names");
 
             if (string.IsNullOrEmpty(viewNames))
             {
-                Console.WriteLine("Missing --view-names argument");
-                throw new ArgumentNullException(nameof(viewNames));
+                Utilis.DieWith("Missing --view-names argument");
             }
 
             if (viewNames == "all")
@@ -97,6 +94,11 @@ namespace API.Base.Web.RazorGenerator
         private void GenerateView(IServiceProvider serviceProvider, string viewName)
         {
             var controllerType = GetControllerType();
+            if (!typeof(IGenerableView).IsAssignableFrom(controllerType))
+            {
+                Utilis.DieWith("Controller type '" + controllerType + "' doesn't implement '" + typeof(IGenerableView) +
+                               "'");
+            }
 
             var controllerInstance = (IGenerableView) serviceProvider.GetService(controllerType);
             controllerInstance.SetServiceProvider(serviceProvider);
@@ -126,7 +128,7 @@ namespace API.Base.Web.RazorGenerator
             task.Wait();
         }
 
-        protected virtual void AddTmpViesDirectory(IServiceCollection services)
+        protected virtual void AddTmpViewsDirectory(IServiceCollection services)
         {
             var tmpViewsPath = EnvVarManager.GetOrThrow("TEMPORARY_VIEWS_PATH");
             var sharedViewsDirectory = Path.Combine(tmpViewsPath, "Views", "Shared");

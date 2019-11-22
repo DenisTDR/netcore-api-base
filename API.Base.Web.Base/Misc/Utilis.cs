@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace API.Base.Web.Base.Misc
 {
     public static class Utilis
     {
-        private const int SelectorLength = 32;
         public static string GenerateRandomHexString(int length = 20)
         {
             var str = "";
@@ -12,17 +12,19 @@ namespace API.Base.Web.Base.Misc
             {
                 str += Guid.NewGuid().ToString().ToLower().Replace("-", "");
             }
+
             return str.Substring(0, length);
         }
 
-        public static string GenerateSelector()
+        public static void DieWith(string message, bool killProcess = true)
         {
-            return GenerateRandomHexString(SelectorLength);
-        }
-
-        public static bool IsSelector(string str)
-        {
-            return !string.IsNullOrEmpty(str) && str.Length == SelectorLength;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ForegroundColor = ConsoleColor.White;
+            if (killProcess)
+            {
+                Process.GetCurrentProcess().Kill();
+            }
         }
     }
 }

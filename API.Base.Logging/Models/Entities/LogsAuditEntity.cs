@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace API.Base.Logging.Models.Entities
 {
-    [Table("LoggingAudit")]
-    public class AuditEntity : LogBaseEntity
+    public class LogsAuditEntity : DbStoredLog, ILog
     {
         public string Ip { get; set; }
 
@@ -27,9 +27,8 @@ namespace API.Base.Logging.Models.Entities
         [MaxLength(10240)] public string Result { get; set; }
 
         [MaxLength(512)] public string RequestUri { get; set; }
-
-        [MaxLength(128)] public string TraceIdentifier { get; set; }
-
         public int ResponseDuration { get; set; }
+        public LogLevel Level { get; set; }
+        public string Tag { get; set; }
     }
 }

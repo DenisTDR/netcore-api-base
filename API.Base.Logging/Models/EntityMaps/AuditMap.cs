@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace API.Base.Logging.Models.EntityMaps
 {
-    public class AuditMap : EntityTypeConfiguration<AuditEntity>
+    public class AuditMap : EntityTypeConfiguration<LogsAuditEntity>
     {
-        public override void Configure(EntityTypeBuilder<AuditEntity> builder)
+        public override void Configure(EntityTypeBuilder<LogsAuditEntity> builder)
         {
             base.Configure(builder);
             builder.HasIndex(e => e.TraceIdentifier);

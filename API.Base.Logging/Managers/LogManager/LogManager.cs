@@ -8,7 +8,7 @@ using API.Base.Logging.Models.Entities;
 using API.Base.Web.Base.Helpers;
 using API.Base.Web.Base.Misc;
 
-namespace API.Base.Logging.Managers
+namespace API.Base.Logging.Managers.LogManager
 {
     internal class LogManager : ILogManager, IDisposable
     {
@@ -62,23 +62,26 @@ namespace API.Base.Logging.Managers
                     .OrderByDescending(f => f.LastWriteTime)
                     .FirstOrDefault()?.Name;
                 var opened = false;
-                try
+                if (!string.IsNullOrEmpty(lastFile))
                 {
-                    Console.WriteLine("Using existing log file: " + lastFile);
-                    TryOpenStream(lastFile);
-                    _logFileSize = (ulong) _streamWriter.BaseStream.Length;
-                    opened = true;
-                    if (_logFileSize > MaxLogFileSize)
+                    try
                     {
-                        Console.WriteLine("Or not, it is already too big.");
-                        _streamWriter.Close();
-                        _streamWriter = null;
-                        opened = false;
+                        Console.WriteLine("Using existing log file: " + lastFile);
+                        TryOpenStream(lastFile);
+                        _logFileSize = (ulong) _streamWriter.BaseStream.Length;
+                        opened = true;
+                        if (_logFileSize > MaxLogFileSize)
+                        {
+                            Console.WriteLine("Or not, it is already too big.");
+                            _streamWriter.Close();
+                            _streamWriter = null;
+                            opened = false;
+                        }
                     }
-                }
-                catch (Exception exc)
-                {
-                    Console.WriteLine("Can't use existing log file: " + exc.Message);
+                    catch (Exception exc)
+                    {
+                        Console.WriteLine("Can't use existing log file: " + exc.Message);
+                    }
                 }
 
 

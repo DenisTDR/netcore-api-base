@@ -6,7 +6,5 @@ namespace API.Base.Web.Base.Models.ViewModels
     {
         [IsReadOnly]
         public string Id { get; set; }
-        [IsReadOnly]
-        public bool? Deleted { get; set; }
     }
 }

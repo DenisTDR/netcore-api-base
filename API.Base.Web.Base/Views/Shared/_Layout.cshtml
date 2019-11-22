@@ -1,4 +1,5 @@
 ﻿@using API.Base.Web.Base.Data
+@using API.Base.Web.Base.Models
 
 @inject ISettingsRepository Settings
 @{
@@ -41,9 +42,11 @@
                 }
                 else
                 {
-                    @await Settings.Get("site_name")
-                    <span></span>
-                    @await Settings.Get("edition_year")
+                    <span class="text-white">
+                        @await Settings.Get("site_name")
+                        <span></span>
+                        @await Settings.Get("edition_year")
+                    </span>
                 }
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -68,6 +71,7 @@
     </nav>
 </header>
 <div class="container">
+    @Html.Partial("_StatusMessageWithType", TempData["_statusMessage"] as StatusMessageWithType)
     <partial name="_CookieConsentPartial"/>
     <main role="main" class="pb-3">
         @RenderBody()

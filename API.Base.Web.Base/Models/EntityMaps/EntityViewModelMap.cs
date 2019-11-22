@@ -9,26 +9,18 @@ namespace API.Base.Web.Base.Models.EntityMaps
         where TEntity : class, IEntity
         where TViewModel : ViewModel
     {
+
+        protected IMappingExpression<TEntity, TViewModel> EntityToViewModelExpression;
+        protected IMappingExpression<TViewModel, TEntity> ViewModelToEntityExpression;
         public virtual void ConfigureEntityToViewModelMapper(IMapperConfigurationExpression configurationExpression)
         {
-            BasicConfigureEntityToViewModelMapper(configurationExpression.CreateMap<TEntity, TViewModel>());
+            EntityToViewModelExpression = configurationExpression.CreateMap<TEntity, TViewModel>();
+            EntityToViewModelExpression.PreserveReferences();
         }
 
         public virtual void ConfigureViewModelToEntityMapper(IMapperConfigurationExpression configurationExpression)
         {
-            BasicConfigureViewModelToEntityMapper(configurationExpression.CreateMap<TViewModel, TEntity>());
-        }
-
-
-        protected void BasicConfigureEntityToViewModelMapper(IMappingExpression<TEntity, TViewModel> expression)
-        {
-            expression.AfterMap((entity, viewModel) => { viewModel.Id = entity.Selector; }).PreserveReferences();
-        }
-
-        protected void BasicConfigureViewModelToEntityMapper(IMappingExpression<TViewModel, TEntity> expression)
-        {
-            expression.ForMember(te => te.Id, opt => opt.Ignore())
-                .AfterMap((viewModel, entity) => { entity.Selector = viewModel.Id; });
+            ViewModelToEntityExpression = configurationExpression.CreateMap<TViewModel, TEntity>();
         }
 
         public Type GetViewModelType()

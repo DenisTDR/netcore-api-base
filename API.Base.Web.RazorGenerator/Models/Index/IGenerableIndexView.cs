@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using API.Base.Web.Base.Models;
@@ -8,7 +7,7 @@ namespace API.Base.Web.RazorGenerator.Models.Index
 {
     public interface IGenerableIndexView<TE> : IGenerableView<TE> where TE : Entity
     {
-        IList<ControllerActionLinkModel> TopLinks { get; set; }
+        IList<AdminDashboardLink> TopLinks { get; set; }
         IList<string> ListItemActions { get; set; }
         IList<PropertyInfo> ListColumns { get; set; }
     }

@@ -27,10 +27,11 @@ namespace API.Base.Web.Common.Partners.Controllers
                 typeof(PartnerTypeEntity).GetProperty(nameof(PartnerTypeEntity.LogoSize))
             };
         }
+
         protected override void SetTopLinks()
         {
-            TopLinks.Add(new ControllerActionLinkModel("Partners", controller: nameof(PartnersUiController)));
-            TopLinks.Add(new ControllerActionLinkModel("Partner Tiers", controller: nameof(PartnerTiersUiController)));
+            TopLinks.Add(new AdminDashboardLink("Partners", typeof(PartnersUiController)));
+            TopLinks.Add(new AdminDashboardLink("Partner Tiers", typeof(PartnerTiersUiController)));
         }
     }
 }

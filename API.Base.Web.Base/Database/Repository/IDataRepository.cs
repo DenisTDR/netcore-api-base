@@ -5,7 +5,7 @@ namespace API.Base.Web.Base.Database.Repository
 {
     public interface IDataRepository
     {
-        Task<IEntity> GetOneEntity(string selector);
+        Task<IEntity> GetOneEntity(string id);
         bool SkipSaving { get; set; }
     }
 }

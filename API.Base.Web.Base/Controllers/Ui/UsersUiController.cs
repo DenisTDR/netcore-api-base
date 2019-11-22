@@ -1,10 +1,7 @@
 using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using API.Base.Web.Base.Auth.Models.Entities;
-using API.Base.Web.Base.Database;
-using API.Base.Web.Base.Database.Repository;
 using API.Base.Web.Base.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -140,9 +137,7 @@ namespace API.Base.Web.Base.Controllers.Ui
         {
             var user = await _userManager.GetUserById(id);
             
-            user.Deleted = true;
-
-            var result = await _userManager.UpdateAsync(user);
+            await _userManager.DeleteAsync(user);
             return RedirectToAction(nameof(Users));
         }
     }

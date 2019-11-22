@@ -78,8 +78,8 @@ namespace API.Base.Web.Base.Extensions
 
         public static bool IsPrimitive(this Type type)
         {
-            return type.IsBooleanType() || type.IsStringType() || type.IsNumericType() ||
-                   typeof(DateTime).IsAssignableFrom(type);
+            return type.IsBooleanType() || type.IsStringType() || type.IsNumericType()
+                   || typeof(DateTime).IsAssignableFrom(type) || typeof(TimeSpan).IsAssignableFrom(type);
         }
 
         public static bool IsBooleanType(this Type type)

@@ -5,7 +5,7 @@
 }
 
 <h1>@ViewData["Title"]</h1>
-@Html.Partial("./_StatusMessageWithType.cshtml", Model.StatusMessage)
+@Html.Partial("~/Views/Shared/_StatusMessageWithType.cshtml", Model.StatusMessage)
 <div class="row">
     <div class="col-md-4">
         <form asp-route-returnUrl="@Model.ReturnUrl" method="post">

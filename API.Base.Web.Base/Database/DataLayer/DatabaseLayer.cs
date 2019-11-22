@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Base.Web.Base.Database.Repository;
 using API.Base.Web.Base.Exceptions;
+using API.Base.Web.Base.Misc;
 using API.Base.Web.Base.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -54,13 +55,16 @@ namespace API.Base.Web.Base.Database.DataLayer
 
         public async Task EnsureMigrated()
         {
-            if ((await _dbContext.Database.GetPendingMigrationsAsync()).Count() != 0)
+            try
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("There are pending migrations!");
-                Console.WriteLine("run 'dotnet run --migrate true'");
-                Console.ForegroundColor = ConsoleColor.White;
-                Process.GetCurrentProcess().Kill();
+                if ((await _dbContext.Database.GetPendingMigrationsAsync()).Any())
+                {
+                    Utilis.DieWith("There are pending migrations!\nrun 'dotnet run --migrate true'");
+                }
+            }
+            catch (Exception e)
+            {
+                Utilis.DieWith("Can't ensure database is migrated. \nReason: " + e.Message);
             }
         }
 

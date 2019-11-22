@@ -19,7 +19,7 @@ namespace API.Base.Web.Base.Helpers
         public static string Get(string name)
         {
             var value = Environment.GetEnvironmentVariable(name);
-            return value;
+            return value ?? "";
         }
     }
 }

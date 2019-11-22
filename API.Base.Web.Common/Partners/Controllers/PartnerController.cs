@@ -39,12 +39,12 @@ namespace API.Base.Web.Common.Partners.Controllers
             var types = await ServiceProvider.GetService<IDataLayer>().Repo<PartnerTypeEntity>().GetAll();
             foreach (var partnerTypeEntity in types)
             {
-                partnerTypeEntity.Partners = partnerTypeEntity.Partners.Where(p => p.Published && !p.Deleted).ToList();
-                partnerTypeEntity.Tiers = partnerTypeEntity.Tiers.Where(p => !p.Deleted).ToList();
+                partnerTypeEntity.Partners = partnerTypeEntity.Partners.Where(p => p.Published).ToList();
+                partnerTypeEntity.Tiers = partnerTypeEntity.Tiers.ToList();
                 foreach (var partnerTierEntity in partnerTypeEntity.Tiers)
                 {
                     partnerTierEntity.Partners =
-                        partnerTierEntity.Partners.Where(p => p.Published && !p.Deleted).ToList();
+                        partnerTierEntity.Partners.Where(p => p.Published).ToList();
                 }
             }
 

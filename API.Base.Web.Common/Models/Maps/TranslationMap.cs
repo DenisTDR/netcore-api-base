@@ -10,9 +10,9 @@ namespace API.Base.Web.Common.Models.Maps
     {
         public override void ConfigureEntityToViewModelMapper(IMapperConfigurationExpression configurationExpression)
         {
-            configurationExpression.CreateMap<TranslationEntity, TranslationViewModel>()
-                .ForMember(t => t.Id, opt => opt.Ignore())
-                .ForMember(t => t.Deleted, opt => opt.Ignore());
+            base.ConfigureEntityToViewModelMapper(configurationExpression);
+            EntityToViewModelExpression
+                .ForMember(t => t.Id, opt => opt.Ignore());
         }
     }
 
@@ -21,7 +21,6 @@ namespace API.Base.Web.Common.Models.Maps
         public override void Configure(EntityTypeBuilder<TranslationEntity> builder)
         {
             base.Configure(builder);
-            builder.HasIndex(t => t.Slug);
             builder.HasIndex(t => t.Language);
         }
     }

@@ -1,6 +1,4 @@
-using API.Base.Web.Base.Models;
 using API.Base.Web.Base.Models.ViewModels;
-using API.Base.Web.Common.Models.Entities;
 
 namespace API.Base.Web.Common.Models.ViewModels
 {

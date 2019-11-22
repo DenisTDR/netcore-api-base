@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -10,7 +9,6 @@ using API.Base.Web.Base.Models.ViewModels;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace API.Base.Web.Base.Controllers.Api
@@ -70,7 +68,6 @@ namespace API.Base.Web.Base.Controllers.Api
 
         protected IEnumerable<TVm> Map(IEnumerable<TE> es)
         {
-            Console.WriteLine("Map: " + typeof(TVm).Name + " from " + typeof(TE).Name);
             return Mapper.Map<IEnumerable<TVm>>(es);
         }
     }

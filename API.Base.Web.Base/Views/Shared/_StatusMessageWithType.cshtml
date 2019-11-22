@@ -1,12 +1,12 @@
-@model StatusMessageWithType
+@model API.Base.Web.Base.Models.StatusMessageWithType
 
 @if (Model != null && !string.IsNullOrEmpty(Model.Message))
 {
-    var statusMessageClass = Model.Type;
-    <div class="alert alert-@statusMessageClass alert-dismissible" role="alert">
+    <div class="alert alert-@Model.Type alert-dismissible" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
-        @Model.Message
+        <b>@Model.Message</b>
+        <div>@Model.Body</div>
     </div>
 }

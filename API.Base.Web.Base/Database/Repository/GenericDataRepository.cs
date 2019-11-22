@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using API.Base.Web.Base.Database.DataLayer;
 using API.Base.Web.Base.Database.Repository.Helpers;
-using API.Base.Web.Base.Misc;
+using API.Base.Web.Base.Exceptions;
 using API.Base.Web.Base.Misc.PatchBag;
 using API.Base.Web.Base.Models.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -21,9 +21,9 @@ namespace API.Base.Web.Base.Database.Repository
         public DbSet<T> DbSet => _dbSet;
         public IQueryable<T> Queryable => _queryable;
 
-        public virtual async Task<IEntity> GetOneEntity(string selector)
+        public virtual async Task<IEntity> GetOneEntity(string id)
         {
-            return await GetOne(selector);
+            return await GetOne(id);
         }
 
         public virtual void RebuildQueryable(Func<IQueryable<T>, IQueryable<T>> func)
@@ -41,7 +41,7 @@ namespace API.Base.Web.Base.Database.Repository
         public GenericRepository(DbSet<T> dbSet, IDataLayer dataLayer)
         {
             _dbSet = dbSet;
-            _queryable = dbSet.Where(e => !e.Deleted);
+            _queryable = dbSet;
             _dataLayer = dataLayer;
             if (typeof(IOrderedEntity).IsAssignableFrom(typeof(T)))
             {
@@ -49,19 +49,28 @@ namespace API.Base.Web.Base.Database.Repository
             }
         }
 
-        public virtual async Task<T> GetOne(string selectorOrId, bool includeDeleted = false)
+        public virtual async Task<T> GetOne(string id)
         {
-            if (selectorOrId == null)
+            if (id == null)
             {
                 return null;
             }
 
-            var query = _queryable.Where(e => e.Selector == selectorOrId || e.Id == selectorOrId);
+            var query = _queryable.Where(e => e.Id == id);
+            var entity = await query.FirstOrDefaultAsync();
 
-            return await query.FirstOrDefaultAsync();
+            if (!(entity is null) || !typeof(T).GetInterfaces().Contains(typeof(ISlugableEntity)))
+            {
+                return entity;
+            }
+
+            query = _queryable.Where(e => ((ISlugableEntity) e).Slug == id);
+            entity = await query.FirstOrDefaultAsync();
+
+            return entity;
         }
 
-        public virtual async Task<IEnumerable<T>> GetAll(bool includeDeleted = false, bool dontFetch = false)
+        public virtual async Task<IEnumerable<T>> GetAll(bool dontFetch = false)
         {
             var query = _queryable;
             if (!dontFetch)
@@ -75,9 +84,7 @@ namespace API.Base.Web.Base.Database.Repository
         public virtual async Task<T> Add(T e)
         {
 //            Console.WriteLine("adding a " + typeof(T).Name);
-            e.Selector = Utilis.GenerateSelector();
             e.Created = e.Updated = DateTime.Now;
-            e.Deleted = false;
             await new EntityUpdateHelper<T>(_dataLayer, _dbSet).BindRelatedEntities(e);
             var addingResult = await _dbSet.AddAsync(e);
 
@@ -92,12 +99,7 @@ namespace API.Base.Web.Base.Database.Repository
 
         public virtual async Task<T> AddOrUpdate(T e)
         {
-            if (!Utilis.IsSelector(e.Selector))
-            {
-                return await this.Add(e);
-            }
-
-            var existing = _dbSet.FirstOrDefaultAsync(entity => entity.Selector == e.Selector);
+            var existing = _dbSet.FirstOrDefaultAsync(entity => entity.Id == e.Id);
             if (existing == null)
             {
                 return await this.Add(e);
@@ -137,31 +139,36 @@ namespace API.Base.Web.Base.Database.Repository
             return existing;
         }
 
-        public virtual async Task<bool> Exists(string selector, bool includeDeleted = false)
+        public virtual async Task<bool> Exists(string id)
         {
             IQueryable<T> query = _queryable;
-            if (!includeDeleted)
-            {
-                query = query.Where(e => !e.Deleted);
-            }
 
-            return await query.AnyAsync(e => e.Selector == selector);
+            return await query.AnyAsync(e => e.Id == id);
         }
 
-        public virtual async Task<bool> Delete(string idOrSelector)
+        public virtual async Task<bool> Delete(string id)
         {
-            //            Console.WriteLine("Repo Delete: " + selector);
-            var existing = await GetOne(idOrSelector);
+            //            Console.WriteLine("Repo Delete: " + id);
+            var existing = await GetOne(id);
             if (existing == null)
             {
                 return false;
             }
 
-            existing.Deleted = true;
-//            DbSet.Update(existing);
+            _dbSet.Remove(existing);
+
             if (!SkipSaving)
             {
-                await _dataLayer.SaveChangesAsync();
+                try
+                {
+                    await _dataLayer.SaveChangesAsync();
+                }
+                catch (DbUpdateException e)
+                {
+                    throw new KnownException(
+                        $"Can't delete {typeof(T).Name} with id: '{id}'. It is referenced by another object.", 400, e,
+                        $"Can't delete <i>{existing}</i> ({typeof(T).Name} with id: <i>{id}</i>). It is referenced by another object.");
+                }
             }
 
             return true;

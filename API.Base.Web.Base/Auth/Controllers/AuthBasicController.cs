@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using API.Base.Web.Base.Auth.Jwt;
@@ -21,7 +20,7 @@ namespace API.Base.Web.Base.Auth.Controllers
 {
     [Route("api/[controller]/[action]")]
     [Produces("application/json")]
-    public abstract class AuthBasicController : ApiController
+    public abstract class AuthBasicController<TLogin> : ApiController where TLogin : LoginRequestModel
     {
         protected IEmailHelper EmailHelper;
         protected SignInManager<User> SignInManager;
@@ -38,14 +37,14 @@ namespace API.Base.Web.Base.Auth.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public virtual async Task<IActionResult> Login([FromBody] LoginRequestModel model)
+        public virtual async Task<IActionResult> Login([FromBody] TLogin model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
             var user = await UserManager.FindByNameAsync(model.Email);
-            if (user == null || user.Deleted)
+            if (user == null)
             {
                 return BadRequest(new[]
                     {new ErrorResponseModel {Code = "InvalidCredentials", Description = "Invalid credentials."}});
@@ -347,7 +346,7 @@ namespace API.Base.Web.Base.Auth.Controllers
         [HttpGet]
         [Authorize]
         [ProducesResponseType(typeof(UserViewModel), 200)]
-        public async Task<IActionResult> GetOwn()
+        public virtual async Task<IActionResult> GetOwn()
         {
             var vm = new UserViewModel
             {
@@ -363,7 +362,7 @@ namespace API.Base.Web.Base.Auth.Controllers
         [HttpPost]
         [Authorize]
         [ProducesResponseType(typeof(UserViewModel), 200)]
-        public async Task<IActionResult> UpdateOwn([FromBody] UserViewModel vm)
+        public virtual async Task<IActionResult> UpdateOwn([FromBody] UserViewModel vm)
         {
             CurrentUser.FirstName = vm.FirstName;
             CurrentUser.LastName = vm.LastName;

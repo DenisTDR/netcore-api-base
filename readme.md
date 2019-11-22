@@ -6,8 +6,8 @@
    * Clone API.StartApp and update project name/folder (only if you want to recreate the project)
      * ``IMPORTANT NOTE``: ``_ViewImports.cshtml`` should exists in your StartUp Project Views folder.
    * Set your environment variables
-       * Create ``conf.vars.local`` file and overwrite environment variables from ``conf.vars`` (if necessary)
-       * Run ``. set-env-var.sh`` (Linux) / ``set-env-var.bat`` (Windows)
+       * Create ``conf.vars.local`` file and overwrite environment variables you want to have different values from ``conf.vars``
+       * Run ``. set-env-vars.sh`` (Linux) / ``set-env-vars.bat`` (Windows) (use ``CMD`` and NOT ``PowerShell``)
    * Create initial migrations: ``dotnet ef migrations add initial`` (only if you want to recreate the entire database)
    * Seed database: ``dotnet run --seed true --migrate true``
    * Give admin to email (existing account): ``dotnet run --give-admin [email]``
@@ -32,7 +32,7 @@
 #### New admin UI for new ``Entity`` model    
 * Create a new controller inherited from ``NVGenericUiController``
 
-      dotnet run --generate-razor-view true --controller [controler_name] --view-names [view_name1,...]
+      dotnet run --generate-razor-view true --controller [controller_name] --view-names [view_name1,...]
 * Available views: ``Index,_Display,Details,_Form,Create,Edit,Delete`` or ``all``
   
 ### Deploy/Access
@@ -56,4 +56,17 @@
     * ``SENDGRID_KEY`` - SendGrid API Key - for sending emails (if not set the sending is simulated in stdout/console)
     * ``LOGS_DIRECTORY`` - directory to put logs file in, if not set '../logs' will be used
     * ``ALLOWED_CORS_HOSTS`` - ';' separated list of hosts (http[s]://domain[:port])
-    * ``VIEWS_AND_WWW_PATHS`` - Only with ``dotnet [watch] run`` - ';' separated list of relative directory paths of projects which includes Views or wwwroot folders 
+    * ``VIEWS_AND_WWW_PATHS`` - Only with ``dotnet [watch] run`` - ',' separated list of relative directory paths of projects which includes Views or wwwroot folders 
+
+### Legend
+  * ``Entity`` - Model mapped to database
+  * ``ViewModel`` - Model for api
+  * ``ApiController`` - for API endpoints
+    * inheriting ``GenericReadOnlyController<Entity, ViewModel>`` or ``GenericCrudController<Entity, ViewModel>``
+      * ``GenericReadOnlyController`` - implements ``GetAll`` and ``GetOne`` api endpoints
+      * ``GenericCrudController`` - inheriting GenericReadOnlyController and implements ``Add``, ``Patch`` and ``Delete`` api endpoints
+  * ``UiController`` - controller for Admin Interface
+    * inheriting ``NvGenericUiController<Entity>`` (non view Generic ui Controller)
+    
+  * ``IOrderedEntity`` 
+  * ``IPublishable`` 

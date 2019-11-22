@@ -1,7 +1,27 @@
+using System;
+using System.Linq.Expressions;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+
 namespace API.Base.Web.Base.Extensions.HtmlHelpers
 {
     public static class HtmlHelpers
     {
+        public static IHtmlContent DescriptionFor<TModel, TValue>(this IHtmlHelper<TModel> html,
+            Expression<Func<TModel, TValue>> expression)
+        {
+            if (html == null) throw new ArgumentNullException(nameof(html));
+            if (expression == null) throw new ArgumentNullException(nameof(expression));
+
+            var modelExplorer =
+                ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+            if (modelExplorer == null)
+                throw new InvalidOperationException(
+                    $"Failed to get model explorer for {ExpressionHelper.GetExpressionText(expression)}");
+
+            return new HtmlString($"<small class='form-text text-muted'>{modelExplorer.Metadata.Description}</small>");
+        }
 //        public static HtmlHelper<TModel> HtmlHelperFor<TModel>(this HtmlHelper htmlHelper)
 //        {
 //            return HtmlHelperFor(htmlHelper, default(TModel));

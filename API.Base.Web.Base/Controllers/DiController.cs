@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using API.Base.Web.Base.Auth.Models.Entities;
 using API.Base.Web.Base.Helpers;
 using Microsoft.AspNetCore.Identity;

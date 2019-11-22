@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using API.Base.Logging.Filters;
 using API.Base.Logging.Logger;
 using API.Base.Web.Base.ApiBuilder;
-using API.Base.Web.Base.Extensions;
-using API.Base.Web.Base.Models.EntityMaps;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;

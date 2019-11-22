@@ -11,8 +11,8 @@ namespace API.Base.Web.Base.Database.Repository
 {
     public interface IRepository<T> : IDataRepository where T : class, IEntity
     {
-        Task<T> GetOne(string selectorOrId, bool includeDeleted = false);
-        Task<IEnumerable<T>> GetAll(bool includeDeleted = false, bool dontFetch = false);
+        Task<T> GetOne(string id);
+        Task<IEnumerable<T>> GetAll(bool dontFetch = false);
         Task<T> Add(T e);
         Task<T> Update(T e);
         Task<T> Patch(EntityPatchBag<T> eub);
@@ -20,9 +20,9 @@ namespace API.Base.Web.Base.Database.Repository
         Task<T> FindOne(Expression<Func<T, bool>> predicate);
         Task<IEnumerable<T>> FindAll(Expression<Func<T, bool>> predicate = null);
         Task<bool> Any(Expression<Func<T, bool>> predicate = null);
-        Task<bool> Exists(string selector, bool includeDeleted = false);
+        Task<bool> Exists(string id);
 
-        Task<bool> Delete(string idOrSelector);
+        Task<bool> Delete(string id);
 
         DbSet<T> DbSet { get; }
         IQueryable<T> Queryable { get; }

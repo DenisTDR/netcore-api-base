@@ -17,7 +17,7 @@ namespace API.Base.Web.Common.Controllers.Ui
 
         public override async Task<IEnumerable<TranslationEntity>> GetAllEntities()
         {
-            var all = await Repo.GetAll(false, true);
+            var all = await Repo.GetAll(true);
             all = all.OrderBy(entity => entity.Slug).ThenBy(entity => entity.Language);
             return all;
         }

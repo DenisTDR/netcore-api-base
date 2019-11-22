@@ -11,7 +11,7 @@
                 @@Html.DisplayNameFor(model => model.@prop.Name)
             </dt>
             <dd class="col-sm-10">
-                @if (prop.PropertyType.IsSubclassOf(typeof(API.Base.Files.Models.Entities.FileEntity)))
+                @if (typeof(API.Base.Files.Models.Entities.FileEntity).IsAssignableFrom(prop.PropertyType))
                 {
                     @Html.Raw("            @{ ")
                     @Html.Raw("await Html.RenderBlindPartialAsync(\"_FileLinkPreview\", Model." + prop.Name + ", ViewData);")

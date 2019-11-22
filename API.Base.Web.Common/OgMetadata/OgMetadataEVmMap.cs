@@ -4,14 +4,13 @@ using AutoMapper;
 
 namespace API.Base.Web.Common.OgMetadata
 {
-
     public class OgMetadataEVmMap : EntityViewModelMap<OgMetadataEntity, OgMetadataViewModel>
     {
         public override void ConfigureEntityToViewModelMapper(IMapperConfigurationExpression configurationExpression)
         {
-            configurationExpression.CreateMap<OgMetadataEntity, OgMetadataViewModel>()
+            base.ConfigureEntityToViewModelMapper(configurationExpression);
+            EntityToViewModelExpression
                 .ForMember(t => t.Id, opt => opt.Ignore())
-                .ForMember(t => t.Deleted, opt => opt.Ignore())
                 .ForMember(t => t.Image, opt => opt.Ignore())
                 .AfterMap((e, vm) =>
                 {
@@ -19,7 +18,8 @@ namespace API.Base.Web.Common.OgMetadata
                     {
                         return;
                     }
-                    vm.Image  = Mapper.Map<FileViewModel>(e.Image)?.Link;
+
+                    vm.Image = Mapper.Map<FileViewModel>(e.Image)?.Link;
                 });
         }
     }

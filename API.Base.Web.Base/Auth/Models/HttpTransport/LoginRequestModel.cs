@@ -3,7 +3,7 @@ using API.Base.Web.Base.Attributes.GenericForm;
 
 namespace API.Base.Web.Base.Auth.Models.HttpTransport
 {
-    public class LoginRequestModel: HttpTransportBaseType
+    public class LoginRequestModel : HttpTransportBaseType
     {
         [Required]
         [DataType(DataType.EmailAddress)]
@@ -11,7 +11,7 @@ namespace API.Base.Web.Base.Auth.Models.HttpTransport
         [FieldHint("login-email-hint")]
         [FieldAutocomplete("username email")]
         [FieldPlaceholder("login-email-placeholder")]
-        public string Email { get; set; }
+        public virtual string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
@@ -19,6 +19,6 @@ namespace API.Base.Web.Base.Auth.Models.HttpTransport
         [FieldHint("login-password-hint")]
         [FieldAutocomplete("current-password")]
         [FieldPlaceholder("login-password-placeholder")]
-        public string Password { get; set; }
+        public virtual string Password { get; set; }
     }
 }

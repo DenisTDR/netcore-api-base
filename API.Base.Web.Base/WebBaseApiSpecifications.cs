@@ -50,8 +50,8 @@ namespace API.Base.Web.Base
             });
 
             var option = new RewriteOptions();
-            option.AddRedirect("^$", "/api/docs");
-            option.AddRedirect("^api/$", "/api/docs");
+            option.AddRedirect("^$", "/api/admin");
+            option.AddRedirect("^api/$", "/api/admin");
             app.UseRewriter(option);
         }
 
@@ -154,9 +154,9 @@ namespace API.Base.Web.Base
                 Name = "Base",
                 Links = new List<AdminDashboardLink>
                 {
-                    new AdminDashboardLink("Users", nameof(UsersUiController),
+                    new AdminDashboardLink("Users", typeof(UsersUiController)).WithMethod(
                         nameof(UsersUiController.Users)),
-                    new AdminDashboardLink("Generate seed", nameof(AdminDashboardController),
+                    new AdminDashboardLink("Generate seed", typeof(AdminDashboardController)).WithMethod(
                         nameof(AdminDashboardController.Seed)),
                 }
             };

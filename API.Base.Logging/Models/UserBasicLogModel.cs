@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace API.Base.Logging.Models
 {
     public class UserBasicLogModel

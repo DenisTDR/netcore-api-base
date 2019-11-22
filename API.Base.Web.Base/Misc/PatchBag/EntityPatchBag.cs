@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using API.Base.Web.Base.Models.Entities;
 using Newtonsoft.Json;
 
@@ -11,6 +12,7 @@ namespace API.Base.Web.Base.Misc.PatchBag
 
         public Dictionary<string, bool> PropertiesToUpdate { get; set; }
 
-        [JsonIgnore] public bool HasAnything => PropertiesToUpdate != null && PropertiesToUpdate.Count > 0;
+        [JsonIgnore]
+        public bool HasAnything => PropertiesToUpdate != null && PropertiesToUpdate.Any(kvp => kvp.Value);
     }
 }

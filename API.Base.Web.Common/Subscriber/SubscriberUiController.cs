@@ -13,7 +13,7 @@ namespace API.Base.Web.Common.Subscriber
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
-            Repo.RebuildQueryable(dbSet => dbSet.Where(s => !s.Deleted).OrderBy(s => s.Created));
+            Repo.RebuildQueryable(dbSet => dbSet.OrderBy(s => s.Created));
         }
 
         public override async Task<IActionResult> Index()

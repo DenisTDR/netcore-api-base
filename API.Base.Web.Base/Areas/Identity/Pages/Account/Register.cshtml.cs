@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using API.Base.Web.Base.Auth.Models.Entities;
 using API.Base.Web.Base.Helpers;
+using API.Base.Web.Base.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -80,14 +81,23 @@ namespace API.Base.Web.Base.Areas.Identity.Pages.Account
 
                     result = await _userManager.AddToRoleAsync(user, "User");
                     result = await _userManager.AddToRoleAsync(user, "Staff");
-                    if (await _userManager.Users.CountAsync() == 1)
+                    var isFirstUser = await _userManager.Users.CountAsync() == 1;
+                    if (isFirstUser)
                     {
                         result = await _userManager.AddToRoleAsync(user, "Admin");
                         result = await _userManager.AddToRoleAsync(user, "Moderator");
+                        var activationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        await _userManager.ConfirmEmailAsync(user, activationToken);
                     }
 
                     if (result.Succeeded)
                     {
+                        if (isFirstUser)
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                            return LocalRedirect(returnUrl);
+                        }
+
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                         var callbackUrl = Url.Page(
                             "/Account/ConfirmEmail",
@@ -96,13 +106,10 @@ namespace API.Base.Web.Base.Areas.Identity.Pages.Account
                             protocol: Request.Scheme);
 
                         await _emailHelper.SendAdminConfirmationEmail(Input.Email, callbackUrl);
-
-//                    await _signInManager.SignInAsync(user, isPersistent: false);
-
-                        StatusMessage = new StatusMessageWithType("Confirmation email sent. Please check your email.",
+                        StatusMessage = new StatusMessageWithType("Success",
+                            "Confirmation email sent. Please check your email.",
                             "info");
                         return Page();
-//                        return LocalRedirect(returnUrl);
                     }
                 }
 

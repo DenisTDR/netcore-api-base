@@ -38,7 +38,6 @@ namespace API.Base.Web.Base.Swagger
                 uiOptions.InjectStylesheet("/api/swagger/swagger-ui-theme.css");
                 uiOptions.InjectJavascript("/api/swagger/swagger-ui-theme.js");
                 uiOptions.IndexStream = _swaggerSpecs.IndexStreamAction;
-//                uiOptions.inde
             });
         }
 
@@ -46,8 +45,13 @@ namespace API.Base.Web.Base.Swagger
         {
             services.AddSwaggerGen(options =>
             {
+                _swaggerSpecs.Description = "[Admin panel](/api/admin/)" + _swaggerSpecs.Description;
                 options.SwaggerDoc(_swaggerSpecs.Name,
-                    new Info {Title = _swaggerSpecs.Title, Version = _swaggerSpecs.Version});
+                    new Info
+                    {
+                        Title = _swaggerSpecs.Title, Version = _swaggerSpecs.Version,
+                        Description = _swaggerSpecs.Description
+                    });
                 options.OperationFilter<SwaggerCustomOperationFilter>();
                 options.DocumentFilter<SwaggerCustomDocumentFilter>();
                 options.SchemaFilter<GenericFormConfigGenerator>();

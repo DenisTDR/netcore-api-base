@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using API.Base.Web.Base.Controllers.Api;
 using API.Base.Web.Base.Extensions;
 using API.Base.Web.Base.Models;
 using API.Base.Web.Base.Models.EntityMaps;
@@ -26,6 +24,8 @@ namespace API.Base.Web.Base.ApiBuilder
         {
             Configuration = configuration;
         }
+
+        public Action<IServiceCollection> AddDbSeederAction { get; protected set; }
 
         public virtual void ConfigMvc(MvcOptions options)
         {
@@ -57,6 +57,11 @@ namespace API.Base.Web.Base.ApiBuilder
         public virtual List<AdminDashboardSection> RegisterAdminDashboardSections()
         {
             return new List<AdminDashboardSection>();
+        }
+
+        public virtual List<Type> DisableEntityStacks()
+        {
+            return new List<Type>();
         }
 
         public IEnumerable<Type> GetEntityTypesConfigurationsFromAssembly(Assembly assembly)

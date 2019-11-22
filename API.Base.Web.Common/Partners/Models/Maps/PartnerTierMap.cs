@@ -1,6 +1,5 @@
 using API.Base.Web.Base.Models.EntityMaps;
 using API.Base.Web.Common.Partners.Models.Entities;
-using API.Base.Web.Common.Partners.Models.ViewModels;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace API.Base.Web.Common.Partners.Models.Maps

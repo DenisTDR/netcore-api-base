@@ -7,16 +7,18 @@
 }
 
 <h2>@ViewData["Title"]</h2>
-@Html.RenderBlindPartialAsync("_ShowHideColumns", new ShowHideColumnsModel()
-{
-    Columns = new List<string>()
+@{
+    await Html.RenderBlindPartialAsync("_ShowHideColumns", new ShowHideColumnsModel()
     {
-        "Question",
-        "Answer",
-        "Category",
-        "Published"
-    }
-})
+        Columns = new List<string>()
+        {
+            "Question",
+            "Answer",
+            "Category",
+            "Published"
+        }
+    });
+}
 <div class="row">
     <div class="col-12 col-md-6">
     </div>

@@ -23,7 +23,4 @@
         <EmbeddedResource Include="wwwroot\api\swagger\index.html" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="wwwroot\api\admin\data-tables" />
-    </ItemGroup>
 </Project>

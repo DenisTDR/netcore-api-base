@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using API.Base.Web.Base.Database.DataLayer;
 using API.Base.Web.Base.Database.Repository;
 using API.Base.Web.Base.Exceptions;
 using API.Base.Web.Common.Models.Entities;
-using Newtonsoft.Json;
 
 namespace API.Base.Web.Common.Data
 {

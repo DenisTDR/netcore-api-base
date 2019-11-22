@@ -1,0 +1,75 @@
+﻿@using API.Base.Web.Base.Exceptions
+@model API.Base.Web.Base.Models.ViewModels.ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+<div class="error-page">
+    <h1 class="text-danger">Error.</h1>
+    <h2 class="text-danger">An error occurred while processing your request.</h2>
+
+    @if (Model?.ShowRequestId == true)
+    {
+        <p>
+            <strong>Request ID:</strong> <code>@Model.RequestId</code>
+        </p>
+    }
+    @if (Model?.Exception is KnownException kEx)
+    {
+        <p>
+            <strong>Status code:</strong>
+            <code>
+                <b>@kEx.Code</b>
+            </code>
+        </p>
+    }
+    @{
+        var exc = Model?.Exception;
+    }
+
+    @if (exc != null)
+    {
+        <div class="exception">
+            <svg height="8" width="8">
+                <circle cx="4" cy="4" r="4" fill="black"/>
+            </svg>
+            <div class="exception-text">
+                @if (exc is KnownException kExc)
+                {
+                    @Html.Raw(kExc.HtmlMessage)
+                }
+                else
+                {
+                    @exc.Message
+                }
+            </div>
+        </div>
+        <hr/>
+        exc = exc.InnerException;
+    }
+    <div>
+        <i>Check admin logs for full stack trace and more details.</i>
+    </div>
+</div>
+<style>
+    
+    .error-page .exception {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    .error-page .exception svg {
+        margin-right: 15px;
+        margin-left: 10px;
+        min-width: 8px;
+    }
+    .error-page .exception-text {
+        font-size: 1.2em;
+        font-weight: 500;
+        color: #666;
+    }
+    .error-page .exception-text i {
+        color: #333;
+        font-weight: bold;
+    }
+    
+</style>

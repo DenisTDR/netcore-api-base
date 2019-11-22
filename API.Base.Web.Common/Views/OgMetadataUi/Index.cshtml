@@ -8,17 +8,17 @@
 
 <h2>@ViewData["Title"]</h2>
 @{
-    @Html.RenderBlindPartialAsync("_ShowHideColumns", new ShowHideColumnsModel()
-          {
-              Columns = new List<string>()
-              {
-                  "Slug",
-                  "Title",
-                  "Description",
-                  "Type",
-                  "Image"
-              }
-          })
+    await Html.RenderBlindPartialAsync("_ShowHideColumns", new ShowHideColumnsModel()
+    {
+        Columns = new List<string>()
+        {
+            "Slug",
+            "Title",
+            "Description",
+            "Type",
+            "Image"
+        }
+    });
 }
 <div class="d-flex justify-content-end pb-2">
     <a class="btn btn-primary" asp-action="Create">Create new OgMetadata</a>
@@ -62,7 +62,7 @@
                 <span>@Html.DisplayFor(modelItem => item.Type)</span>
             </td>
             <td>
-                @{await Html.RenderBlindPartialAsync("_FileLinkPreview", item.Image, ViewData);}
+                @{ await Html.RenderBlindPartialAsync("_FileLinkPreview", item.Image, ViewData); }
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> <span></span>
