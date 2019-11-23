@@ -232,7 +232,7 @@ namespace API.Base.Web.Base.Auth.Controllers
                 return BadRequest(new[]
                 {
                     new ErrorResponseModel
-                        {Code = "InvalidCredentials", Description = "The new introduced passwords don't match."}
+                        {Code = "InvalidCredentials", Description = "The passwords don't match."}
                 });
             }
 
