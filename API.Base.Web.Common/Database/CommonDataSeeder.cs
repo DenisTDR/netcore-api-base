@@ -111,7 +111,7 @@ namespace API.Base.Web.Common.Database
 
         protected virtual async Task SeedOgMetaDatas()
         {
-            if (SeedingData.OgMetaDatas == null)
+            if (SeedingData.OgMetaDatas == null || !SeedingData.OgMetaDatas.Any())
             {
                 return;
             }
@@ -134,7 +134,7 @@ namespace API.Base.Web.Common.Database
 
         protected virtual async Task SeedFaqs()
         {
-            if (SeedingData.Faqs == null)
+            if (SeedingData.Faqs == null || !SeedingData.Faqs.Any())
             {
                 return;
             }
